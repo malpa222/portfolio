@@ -1,9 +1,9 @@
 <header class="site-header">
 
   <div class="wrapper">
-    {%- assign default_paths = site.pages | map: "path" -%}
-    {%- assign page_paths = site.header_pages | default: default_paths -%}
-    {%- assign titles_size = site.pages | map: 'title' | join: '' | size -%}
+	  {%- assign default_paths = site.pages | map: "path" -%}
+	  {% comment %} {%- assign page_paths = site.header_pages | default: default_paths -%} {% endcomment %} 
+	  {% comment %} {%- assign titles_size = site.pages | map: 'title' | join: '' | size -%} {% endcomment %} 
     <a class="site-title" rel="author" href="{{ "/" | relative_url }}">Semester 7 portfolio</a>
 
     {%- if titles_size > 0 -%}
