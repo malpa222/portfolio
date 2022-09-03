@@ -5,11 +5,11 @@ layout: default
 
 ## Navigation
 
-1. [Introduction](#Introduction)
-2. [LO1: Security specialist](#LO1:-Security-specialist)
-3. [LO2: Researcher and developer](#LO2:-Researcher-and-developer)
-4. [LO3: Security professional](#LO3:-Security-professional)
-6. [Personal project](#Personal-project)
+1. [Introduction](/)
+2. [LO1: Security specialist](/lo1)
+3. [LO2: Researcher and developer](/lo2)
+4. [LO3: Security professional](/lo3)
+6. [Personal project](/project)
 
 ## Introduction
 
