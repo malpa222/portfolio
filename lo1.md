@@ -85,11 +85,18 @@ have decided to use them as my sources for providing examples of recent Windows 
 
 ### Data theft
 
+Sometimes the malware does not need to encrypt the victim's PC or use it to mine cryptocurrencies, but has a slightly more subtle goal - stealing user's data.
+Phishing has its limits, so the best way might be to introduce a malware which will track users activity and stream it to a command and control center.
+
 ## Ransomware attacks
+
+1. Helo Kitty
+
+2. Black Basta
 
 ### Vice Society
 
-### LockBit
+### LockBit3
 
 ## Virtual environments
 
