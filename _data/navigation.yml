@@ -1,10 +1,10 @@
 - name: Home
-  link: /
+  link: /portfolio/
 - name: LO1
-  link: /lo1.html
+  link: /portfolio/lo1.html
 - name: LO2
-  link: /lo2.html
+  link: /portfolio/lo2.html
 - name: LO3
-  link: /lo3.html
+  link: /portfolio/lo3.html
 - name: Personal Project
-  link: /personal.html
+  link: /portfolio/personal.html
