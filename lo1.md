@@ -18,16 +18,26 @@ To me, a trend is a generic term, which can describe the things that are on the 
 certain group sticks to. However, in the cybersecurity context, trends can be defined as the directions in which the industry is developing,
 new attack techniques, exploits on new (and old) technologies as well as the legal aspects of hacking. 
 
-Therefore, I have decided to inquire into different hacker 'groups', malware aggregators and social platforms to see which things are receiving more
+Therefore, I have decided to inquire into different hacker 'groups', malware aggregators and cybersecurity reports to see which things are receiving more
 traction in the red teaming world.
 
-## Windows exploitation
+## Research questions
+
+It is hard to create main research questsion for this document, since it focuses on exploring different trends and not trying to achieve a 'common goal'. 
+Nevertheless, my research needs a direction, therefore I have decided to write down the research questions that I want to follow while conducting the 
+investigation.
+
+1. What kind of malware is on the rise right now?
+
+2. Do new APT actors use currently trending malware families?
+
+3. How do cybersecurity companies protect businessess and organisations agains cyber-attacks?
+
+## What kind of malware is on the rise right now?
 
 Windows is the most popular operating system in the world. Almost every PC runs it, and almost every company is using Windows ecosystem to manage their
 assets and provide services for in-house needs. Moreover, if a company is has a web service, it most likely runs on Azure, which is also built on top of
 Active directory and Windows Servers (*[Azure Stack](https://www.darrylvanderpeijl.com/azure-stack-the-fabric-layer/)*).
-
-### Recent malware and vulnerability discoveries
 
 In order to look for recent malware discoveries I have turned to websites such as *[VX-Underground](https://vx-underground.org)* and 
 *[Malpedia](https://malpedia.caad.fkie.fraunhofer.de)*. Both websites are databases containing malware examples, source code and research papers
@@ -86,6 +96,13 @@ have decided to use them as my sources for providing examples of recent Windows 
 	*[load the payload directly into memory](https://www.bleepingcomputer.com/news/security/bumblebee-malware-adds-post-exploitation-tool-for-stealthy-infections/)*,
 	reducing detection possibilities even more.
 
+## Cyber-attack protection
+
+The amount of cyber threats that can impact an organisation can be overwhelming for companies which do not have SoC teams or sophisticated anti-malware software.
+To respond to the demand, big cybersecurity companies like *[Cloudflare](https://www.cloudflare.com/)*, *[Sonicwall](https://www.sonicwall.com/)* 
+or *[Malwarebytes](https://www.malwarebytes.com/)*.
+
+
 # Hands-on experience
 
 To prove my proficiency in the practical part of red teaming, I have to provide proof of a hand-on experience with hacking. The techniques used are mentioned in the 
@@ -105,7 +122,7 @@ was the result:
 
 I tried sending multiple SQLI payloads, but the service seemed immune to database injection attacks. A colleague gave me a tip to try using Server Side Template Injecton.
 Because I have never heard of this technique, I had to spend some time on learning it and adjusting it to the service. Finally, I found the proper characters to enclose 
-my payload with - _*{ malicious code }_. I tried getting all environment variables from the host.
+my payload like that: _*{ malicious code }_. I tried getting all environment variables from the host.
 
 ![Server's environment variables](./assets/img/get_env.png)
 
