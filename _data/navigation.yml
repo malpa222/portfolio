@@ -2,7 +2,7 @@ docs:
   - title: Home
     children:
       - title: Introduction
-        url: "/"
+        url: ""
       - title: Backlog
         url: "sprints"
   - title: LO1
@@ -12,8 +12,6 @@ docs:
       - title: In-depth research
         url: "/"
       - title: Hands-on experience
-        url: "/"
-  - title: LO2
-  - title: LO3
+        url: "handson"
   - title: Personal project
   - title: Group project

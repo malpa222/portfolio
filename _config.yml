@@ -34,8 +34,21 @@ defaults:
         - wide
       sidebar:
         nav: docs
+  # _handson
+  - scope:
+      path: ""
+      type: handson
+    values:
+      layout: single
+      classes:
+        - wide
+      sidebar:
+        nav: docs
 
 collections:
   sprints:
+    output: true
+    permalink: /:collection/:path/
+  handson:
     output: true
     permalink: /:collection/:path/
