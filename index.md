@@ -1,15 +1,8 @@
 ---
-layout: default
+layout: single
+sidebar:
+  nav: "docs"
 ---
-# Cybersecurity minor
-
-## Navigation
-
-1. [Introduction](/)
-2. [LO1: Security specialist](/lo1)
-3. [LO2: Researcher and developer](/lo2)
-4. [LO3: Security professional](/lo3)
-6. [Personal project](/project)
 
 ## Introduction
 

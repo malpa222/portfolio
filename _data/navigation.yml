@@ -1,10 +1,17 @@
-- name: Home
-  link: /portfolio/
-- name: LO1
-  link: /portfolio/lo1.html
-- name: LO2
-  link: /portfolio/lo2.html
-- name: LO3
-  link: /portfolio/lo3.html
-- name: Personal Project
-  link: /portfolio/personal.html
+docs:
+  - title: Home
+    children:
+      - title: Introduction
+        url: "/"
+  - title: LO1
+    children:
+      - title: Trends research
+        url: "/"
+      - title: In-depth research
+        url: "/"
+      - title: Hands-on experience
+        url: "/"
+  - title: LO2
+  - title: LO3
+  - title: Personal project
+  - title: Group project

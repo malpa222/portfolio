@@ -18,12 +18,31 @@
 # You can create any custom variable you would like, and they will be accessible
 # in the templates via {{ site.myvariable }}.
 
-title: Portfolio
+title: Cybersecurity portfolio
 
 # Build settings
-theme: minima
+remote_theme: "mmistakes/minimal-mistakes@4.24.0"
+
+# minimal mistakes config
+
+search: true
+minimal_mistakes_skin: dirt
+atom_feed:
+  hide: true
+
 plugins:
-  - jekyll-feed
+  - jekyll-include-cache
+
+defaults:
+  # _posts
+  - scope:
+      path: ""
+      type: posts
+    values:
+      layout: single
+      sidebar:
+        nav: docs
+
 
 # Exclude from processing.
 # The following items will not be processed, by default.
