@@ -40,8 +40,8 @@ have decided to use them as my sources for providing examples of recent Windows 
 	has applied strong evasion techniques - it detects whether it is running in a virtual environment, is being debugged or statically analysed.
 	Moreover the dropper uses a technique called *[process hollowing](https://github.com/m0n0ph1/Process-Hollowing)* to evade process-based surveillance.  
 
-	Microsoft's security team found traces of SmokeLoader (alternatively called Dofoil) as early as in 2018. 
-	In *[this post](https://www.microsoft.com/security/blog/2018/03/07/behavior-monitoring-combined-with-machine-learning-spoils-a-massive-dofoil-coin-mining-campaign/)*
+	Microsoft's security team found traces of SmokeLoader (alternatively called Dofoil) as early as in 2018. In
+	*[this post](https://www.microsoft.com/security/blog/2018/03/07/behavior-monitoring-combined-with-machine-learning-spoils-a-massive-dofoil-coin-mining-campaign/)*
 	MS' security team explained that the dropper was used to propagate a cryptocurrency mining software through a poisoned peer-to-peer 
 	application - PUA/PUP called MediaGet.
 

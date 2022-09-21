@@ -4,7 +4,7 @@ docs:
       - title: Introduction
         url: "/"
       - title: Backlog
-        url: "/backlog"
+        url: "sprints"
   - title: LO1
     children:
       - title: Trends research

@@ -24,3 +24,18 @@ defaults:
         - wide
       sidebar:
         nav: docs
+  # _sprints
+  - scope:
+      path: ""
+      type: sprints
+    values:
+      layout: single
+      classes:
+        - wide
+      sidebar:
+        nav: docs
+
+collections:
+  sprints:
+    output: true
+    permalink: /:collection/:path/
