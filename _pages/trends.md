@@ -50,7 +50,7 @@ have decided to use them as my sources for providing examples of recent Windows 
 	In march a new malware loader was discovered. The code was named 'BumbleBee', after an user agent string that the malware used to contact the command
 	and control center. The discovery was made after a malware spread in a spear-phishing email campaign. The following graph shows an example of BumbleBee delivery
 
-	![BumbleBee delivery graph](../../assets/img/trends/bumblebee_email.png)
+	![BumbleBee delivery graph](../assets/img/trends/bumblebee_email.png)
 
 	In late August, a new attempt to deliver malware was prevented. The detailed description can be found on Deep Instinct's 
 	*[website](https://www.deepinstinct.com/blog/the-dark-side-of-bumblebee-malware-loader)*. The malware delivery chain forces user
