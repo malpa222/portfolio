@@ -8,7 +8,7 @@ title: "Sprint 1"
 I have decided to treat first three weeks of the semester as sprint 0, and start the first one on the 19th of September. I have decided to create epics for each
 of the topics in the portfolio and assign issues to them.
 
-![Sprint 1 backlog](/assets/img/backlog/backlog_1.png)
+![Sprint 1 backlog](../../assets/img/backlog/backlog_1.png)
 
 ### Explanation
 
