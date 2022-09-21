@@ -3,10 +3,12 @@ docs:
     children:
       - title: Introduction
         url: "/"
+      - title: Backlog
+        url: "/backlog"
   - title: LO1
     children:
       - title: Trends research
-        url: "/"
+        url: "lo1/trends"
       - title: In-depth research
         url: "/"
       - title: Hands-on experience

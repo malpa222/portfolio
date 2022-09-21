@@ -2,9 +2,10 @@
 layout: single
 sidebar:
   nav: "docs"
+title: Personal Introduction
 ---
 
-## Introduction
+## About me
 
 I am starting this minor having completed the cybersecurity specialisation in semester 4. I was able to gain small experience in
 security related topics such as networking, pentesting, reverse engineering, risk analysis and Linux administration.
@@ -14,7 +15,7 @@ how buffer overflows can happen and perform a vulnerability analysis by a resear
 The group project was a comprehensive security assesment, with red and blue team activities. We conducted the assesment in a Tilburg-based
 company and gave them recommendations for hardening their infrastuscture.
 
-### My interests
+## My interests
 
 Since the beginning of the study, I became interested in Linux system management. Since then I spent a lot of time trying out different
 distributions, tailoring them to fit my needs or automating/extending the core functionality by utilising scripting languages such as Bash,
@@ -28,7 +29,7 @@ Moreover, I am interested in the idea of a decentralised infrastructures. Contra
 infrastructures, the decentralised networks can be naturally scalable if well designed. Furthermore, decentralised networks can be 
 built on top of secure protocols or data structures (such as blockchain), which enhance the security of the network.
 
-### Goals for this semester
+## Goals for this semester
 
 Based on my previous experiences and interests, I plan to further improve my red-teaming skills. Coming from a software background,
 using my programming skills to develeop my toolbox or to exploit weaknesess of computers seems the most appealing to me. I might not be 
