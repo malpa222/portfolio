@@ -30,9 +30,9 @@ investigation.
 
 1. What kind of malware is on the rise right now?
 
-2. Do new APT actors use currently trending malware families?
+2. Do new APT actors use currently trending malware families? ## TODO
 
-3. How do cybersecurity companies protect businessess and organisations agains cyber-attacks?
+3. How do cybersecurity companies protect businessess and organisations agains cyber-attacks? ## TODO
 
 ## What kind of malware is on the rise right now?
 
@@ -47,40 +47,64 @@ In order to look for recent malware discoveries I have turned to websites such a
 on different topics regarding red teaming (as well as sytem hardening). The websites are being often updated with new discoveries, therefore I 
 have decided to use them as my sources for providing examples of recent attacks.
 
-1. Malware loaders - Bumblebee
+### Malware loaders - Bumblebee
 
-	In march a new malware loader was discovered. The code was named 'BumbleBee', after an user agent string that the malware used to contact the command
-	and control center. The discovery was made after a malware spread in a spear-phishing email campaign. The following graph shows an example of BumbleBee delivery
+In march a new malware loader was discovered. The code was named 'BumbleBee', after an user agent string that the malware used to contact the command
+and control center. The discovery was made after a malware spread in a spear-phishing email campaign. The following graph shows an example of BumbleBee delivery
 
-	![BumbleBee delivery graph](./assets/img/bumblebee_email.png)
+| ![BumbleBee delivery graph](../assets/img/trends/bumblebee_email.png) |
+| BumbleBee delivery graph |
 
-	In late August, a new attempt to deliver malware was prevented. The detailed description can be found on Deep Instinct's 
-	*[website](https://www.deepinstinct.com/blog/the-dark-side-of-bumblebee-malware-loader)*. The malware delivery chain forces user
-	to extract a _.zip_ archive, thus the _.iso_ file is mounted on victim's machine. The disk image contains a _.dll_ with payload and 
-	a _.lnk_ file which opens a PowerShell script. To ensure stealthy execution of the payload, the PowerShell script uses multiple evasion techniques, such as:
+In late August, a new attempt to deliver malware was prevented. The detailed description can be found on Deep Instinct's 
+*[website](https://www.deepinstinct.com/blog/the-dark-side-of-bumblebee-malware-loader)*. The malware delivery chain forces user
+to extract a _.zip_ archive, thus the _.iso_ file is mounted on victim's machine. The disk image contains a _.dll_ with payload and 
+a _.lnk_ file which opens a PowerShell script. To ensure stealthy execution of the payload, the PowerShell script uses multiple evasion techniques, such as:
 
-	* It breaks up command strings, to obfuscate code and evade static analysis. An excerpt from the malware PS script:
+* It breaks up command strings, to obfuscate code and evade static analysis. An excerpt from the malware PS script:
 
-	```
-		$maraDizo = "Get";  
-		$maraDizo += "Current";
-		$maraDizo += "Process";
+```
+	$maraDizo = "Get";  
+	$maraDizo += "Current";
+	$maraDizo += "Process";
 
-		# I skipped over some code
+	# I skipped over some code
 
-		$cPr = [System.Diagnostics.Process]::$maraDizo;
-	```
+	$cPr = [System.Diagnostics.Process]::$maraDizo;
+```
 
-	* BumbleBee proactively checks for a virtual/sandboxed environment and tries to prevent analysis. It was found to have been using
-	*[al-khaser](https://github.com/LordNoteworthy/al-khaser)* - an open-source project containing a plethora of different tools that check whether
-	the malware is running in a VM, has a debugger attached, is being analysed etc.  
+* BumbleBee proactively checks for a virtual/sandboxed environment and tries to prevent analysis. It was found to have been using
+*[al-khaser](https://github.com/LordNoteworthy/al-khaser)* - an open-source project containing a plethora of different tools that check whether
+the malware is running in a VM, has a debugger attached, is being analysed etc.  
 
-	According to Bleeping Computer, the malware is still in development and becomes more and more sophisticated with each update - for example, recent 
-	versions, found in September, 
-	*[load the payload directly into memory](https://www.bleepingcomputer.com/news/security/bumblebee-malware-adds-post-exploitation-tool-for-stealthy-infections/)*,
-	reducing detection possibilities even more.
+According to Bleeping Computer, the malware is still in development and becomes more and more sophisticated with each update - for example, recent 
+versions, found in September, 
+*[load the payload directly into memory](https://www.bleepingcomputer.com/news/security/bumblebee-malware-adds-post-exploitation-tool-for-stealthy-infections/)*,
+reducing detection possibilities even more.
 
-2. Ransomware as a Service - BlackCat
+### Ransomware as a Service
+
+In the middle of may 2021, A hacker group _REvil_ launched an attack on several US businesses using a Ransomware as a Service model.
+According to *[Bleeping Computer](https://www.bleepingcomputer.com/news/security/sodinokibi-ransomware-following-the-affiliate-money-trail/)*,
+the hackers would recruit affiliates and use them to distribute ransomware.
+
+| ![RaaS model](../assets/img/trends/raas_model.png) |
+| RaaS affiliate model |
+
+The economy in cybercrime world is constantly evolving to allow attackers with lower level of technical skill to achieve the same results as if they
+were up to par with other, more experienced actors. This is possible by creating a net of acess brokers, operators and affiliates - as shown on the diagram above.
+This allows the ransomware operators to be focused on the ransomware development, keeping them relatively under the radar.
+
+#### Getting access
+
+*[According to Microsoft](https://www.microsoft.com/security/blog/2022/05/09/ransomware-as-a-service-understanding-the-cybercrime-gig-economy-and-how-to-protect-yourself/#ransomware-as-a-sevice-incidents)*
+, access brokers actively scan the internet in order to find vulnerable/misconfigured systems that could serve as botnet. This network would be 'asleep' until 
+an access is needed. With the help of malware droppers such as BumbleBee, access brokers can convienently sell the entry to their clients.
+
+#### BlackCat
+
+In December 2021, a new threat actor identifiying themselves as BlackCat, started advertising their RaaS services on Russian underground forums. Their modus operandi
+initiated a massive shift in the ransomware development world. The malware was written in Rust, which allowed the attackers to simultaneously create samples for
+Windows and Linux.
 
 ## Cyber-attack protection
 
