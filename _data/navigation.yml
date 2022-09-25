@@ -2,7 +2,7 @@ docs:
   - title: Home
     children:
       - title: Introduction
-        url: ""
+        url: "/"
       - title: Backlog
         url: "sprints"
   - title: LO1

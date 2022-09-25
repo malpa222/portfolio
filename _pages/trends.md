@@ -19,9 +19,7 @@ Nevertheless, my research needs a direction, therefore I have decided to write d
 investigation.
 
 1. What kind of malware is on the rise right now?
-
-2. Do new APT actors use currently trending malware families? ## TODO
-
+2. What standards and methodologies are used in the red-teaming world?
 3. How do cybersecurity companies protect businessess and organisations agains cyber-attacks? ## TODO
 
 ## What kind of malware is on the rise right now?
@@ -99,6 +97,57 @@ Windows and Linux.
 _[Kaspersky labs noticed](https://go.kaspersky.com/rs/802-IJN-240/images/TR_BlackCat_Report.pdf)_ that BlackCat members have re-used an existing exfiltration
 malware _Fendr_, to gather data about their victims. According to the raport, the group has modified _Fendr_ to adapt it to their needs, which shows that BlackCat
 is made up from experienced developers.
+
+## What standards and methodologies are used in red-teaming by cybersecurity companies?
+
+Even though every organisation is different, hackers tend to use the same strategies to conduct attacks on companies. Computer networks, servers
+and whole systems are structured in a similar way, which forces attackers to use similar techniques. Therefore, cybersecurity companies created
+frameworks for identifiying the attacks, their stages and the techniquest that hackers used/are going to use.
+
+### Unified killchain
+
+Unified killchain is a framework that aims to provide an insight into the tactics that hackers use to reach their objectives. According to
+_[unifiedkillchain.com](https://www.unifiedkillchain.com/)_, this model divides a cyberattack into three stages, which can be iterated on.
+Not every attack is linear, and with more secure networks or multiple goals, hacker might need to redo the same stage multiple times.
+
+#### First stage: Initial foothold
+
+This is the beginning stage of every attack. Usually, the target goals are only accessible from within the organisational's network, so hackers need
+to gain an entry point. It starts with an initial reconnaissance which allows the cybercriminals to prepare their toolset and tactics accordingly.
+
+| ![Initial foothold](../assets/img/trends/initial_foothold.png) |
+| Initial foothold stage |
+
+When their tools are prepared, hackers will attempt to enter the network by means of phishing, social engineering or exploiting vulnerabilities
+in the network. Having gained access, the hackers will try to establish connnection to their Command and Control servers to ensure persistence on the network,
+while evading defensive systems at the same time.
+
+#### Second stage: Network propagation
+
+After getting that initial foothold into victim's infrastructure, attackers will start gathering information about the compromised system, the network and
+the data that they can access with current privileges.
+
+| ![Network propagation](../assets/img/trends/network_propagation.png) |
+| Network propagation stage |
+
+The attackers will usually start this phase by gaining as much information as possible by pivoting through the network and discovering different services and
+assets. The goal behind this is to find vulnerable points in the system which could allow the for privilege escalation. With higher privileges, attackers
+might be able to execute code to extract user credentials from the memory of the remote system.
+
+With an access to credentials that might have control over other systems, attackers will start another iteration of this phase until they discover
+where their target is stored and have enough priviliges to access it.
+
+#### Third stage: Action on objectives
+
+After the attackers have gained enough priviliges to access the desired assets, they will try to violate confidentiality, integrity or availability of the
+resourcers. Usually the attackers might try to exfiltrate the data to their systems or to encrypt the organisational network and issue a ransom demand.
+
+| ![Action on objectives](../assets/img/trends/action_on_objectives.png) |
+| Action on objectives |
+
+Unified killchain is a tool which can help organisations with understanding how an attacker might approach their system. When an organisation has
+conducted a risk analysis, it will know which assets the attackers might be after, or what other motives they might have. With this knowledge and help of
+cyber killchain, an organisation will be much more prepared for a cyberattack and the aftermath.
 
 ## Cyber-attack protection
 
