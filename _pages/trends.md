@@ -149,8 +149,29 @@ Unified killchain is a tool which can help organisations with understanding how 
 conducted a risk analysis, it will know which assets the attackers might be after, or what other motives they might have. With this knowledge and help of
 cyber killchain, an organisation will be much more prepared for a cyberattack and the aftermath.
 
-## Cyber-attack protection
+### Mitre ATT&CK
 
-The amount of cyber threats that can impact an organisation can be overwhelming for companies which do not have SoC teams or sophisticated anti-malware software.
-To respond to the demand, big cybersecurity companies like _[Cloudflare](https://www.cloudflare.com/)_, _[Sonicwall](https://www.sonicwall.com/)_
-or _[Malwarebytes](https://www.malwarebytes.com/)_.
+_[In around 2013](https://medium.com/mitre-attack/att-ck-101-17074d3bc62)_, Mitre has started working on a framework which would allow them to
+create a map of commmon techniques used by attackers. The goal behind that was to create a comprehensible dataset which could be divided into
+different systems and attacker goals. The framework introduces key concepts:
+
+1. Tactics - Represent the reason behing the attackers actions, the tactical goal. For example, hacker would escalate priviliges on a system.
+2. Techniques - This represents **how** an attacker would achieve this. For example, by exploiting Active Directory.
+3. Sub-techniques - The lower level of _techniques_. An attacker would issue a fake Administrator certificate within AD.
+4. Procedures - Procedures describe the specific implementation of sub-techniques. For example, that the hacker would inject a PowerShell script
+   into a privilieged process to issue a fake call to the AD services.
+
+#### Matrices
+
+To group techniques by the goals they are trying to achieve, ATT&CK uses several matrices and categories. The main categories are Enterprise, Cloud and ICS
+(industrial control systems). Then, each of the categories has multiple subcategories, as shown below.
+
+| ![Matrices](../assets/img/trends/matrices.png) |
+| Matrices |
+
+These higher-level matrices consist of smaller matrices that contain techniques, sub-techniques and procedures. This framework is very useful in addition to the
+unified killchain described eariler. When combining both models an organisation might define the high-level approach that hackers might use to achieve their goals,
+as well as which techniques they are going to use to reach their strategical goals.
+
+| ![Windows matrix](../assets/img/trends/windows_matrix.png) |
+| Windows ATT&CK matrix |
