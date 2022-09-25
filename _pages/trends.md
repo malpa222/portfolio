@@ -20,7 +20,6 @@ investigation.
 
 1. What kind of malware is on the rise right now?
 2. What standards and methodologies are used in the red-teaming world?
-3. How do cybersecurity companies protect businessess and organisations agains cyber-attacks? ## TODO
 
 ## What kind of malware is on the rise right now?
 
