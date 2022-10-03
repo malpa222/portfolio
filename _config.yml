@@ -44,6 +44,16 @@ defaults:
         - wide
       sidebar:
         nav: docs
+  # _personal
+  - scope:
+      path: ""
+      type: personal
+    values:
+      layout: single
+      classes:
+        - wide
+      sidebar:
+        nav: docs
 
 collections:
   sprints:

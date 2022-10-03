@@ -10,8 +10,11 @@ docs:
       - title: Trends research
         url: "lo1/trends"
       - title: In-depth research
-        url: "/"
+        url: "in-depth"
       - title: Hands-on experience
         url: "handson"
   - title: Personal project
+    children:
+      - title: Project plan
+        url: "personal/plan"
   - title: Group project
