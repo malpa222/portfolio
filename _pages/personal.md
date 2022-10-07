@@ -21,7 +21,6 @@ that are going to help me to achieve this goal.
 1. What are the main use cases of Go?
 2. How does Go compare to other back-end programming languages, like PHP or Node.js?
 3. What are secure development guidelines for Go?
-4. How is Go handling E2E encryption? (?)
 
 ## Research strategies
 
@@ -44,3 +43,11 @@ of Library.
 This section will require building on top of the knowledge gained from the two previous questions: the main use cases of Go and how the language works internally.
 This will lead me to conclusions how a secure development workflow should look like in Go which I will then compare with the ones recommended by the language
 developers. This will mostly rely on the Library research, Lab and Field to get opinions from Go developers.
+
+## Project management
+
+In order to efficiently work on the project, I have decided to use Scrum framework for planning and management. I split the semester into three 3 week long sprints:
+
+- Sprint 1 - 03.10 - 24.10
+- Sprint 2 - 24.10 - 14.11
+- Sprint 3 - 14.11 - 05.01
