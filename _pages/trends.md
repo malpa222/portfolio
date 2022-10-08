@@ -19,7 +19,8 @@ Nevertheless, my research needs a direction, therefore I have decided to write d
 investigation.
 
 1. What kind of malware is on the rise right now?
-2. What standards and methodologies are used in the red-teaming world?
+2. What does cross-platform malware development mean?
+3. What standards and methodologies are used in the red-teaming world?
 
 ## What kind of malware is on the rise right now?
 
@@ -96,6 +97,27 @@ Windows and Linux.
 _[Kaspersky labs noticed](https://go.kaspersky.com/rs/802-IJN-240/images/TR_BlackCat_Report.pdf)_ that BlackCat members have re-used an existing exfiltration
 malware _Fendr_, to gather data about their victims. According to the raport, the group has modified _Fendr_ to adapt it to their needs, which shows that BlackCat
 is made up from experienced developers.
+
+## What dangers does the cross-platform malware pose?
+
+As mentioned before, the BlackCat's malware has been developed using Rust, a new systems programming language. Unlike C or C++, Rust does not compile directly to the machine code,
+nor does it require a runtime that will ensure program's portability. Instead, the language was built on top of LLVM - a compiler which provides a frontend for any programming languages.
+This means that Rust code compiles to LLVM's intermediate code, which is then compiled to a specific architecture/system by LLVM. That way, malware developers can write only one program
+which can be easily recompiled to match the target.
+
+| ![Cross-platform malware written in Java](../assets/img/trends/crossplatform.png) |
+| Action on objectives |
+
+The image above is an excerpt from a dropper which works on every major system and downloads the desired malware to the victim's computer. This can be very helpful for
+hackers that are targeting big organisations or want to reuse the same malware. If such an attack would hit a business it's consequences could be severe.
+
+Equipped with such software, attacker can inflict much more damage to an organisation. Nowadays, majority of the companies are working on Windows environments, which means
+that the phishing campaigns need to target Windows PCs. However, the production servers are mainly running Linux because of its stability. This creates an obstacle, which can
+be easily omitted with the help of malware which works on multiple systems. This allows the attackers to move quickly and just 'drop' the exploits onto
+the target systems.
+
+Portable malware has been on a slow but steady rise in recent years. It allows malicous actors to act quickly and effectively. Such framework however requires extensive planning
+and long development process. In the end, it pays off, because such software can be reused, which can be especially helpful for RaaS attacks.
 
 ## What standards and methodologies are used in red-teaming by cybersecurity companies?
 
