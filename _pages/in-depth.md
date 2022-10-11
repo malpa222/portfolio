@@ -18,14 +18,65 @@ along with the sub-questions:
 
 **Is Rust a good choice for creating a cross-platform malware?**
 
-- Is Rust well supported on Windows/Linux/MacOS?
+- Does Rust have native support on Windows/Linux?
 - How long does it takes to develop a malware in Rust?
 - How does Rust handle binary portability/cross-platform compiling?
 
 I will try to answer the main research question by working on each of the sub-questions and producing a multiplatform keylogger written in Rust.
 
-## Is Rust well supported on Windows/Linux/MacOS?
+## Does Rust have native support on Windows/Linux?
 
-## How long does it takes to develop a malware in Rust?
+Since Rust was created with portability in mind, one would expect the language to be have good support for interacting with the kernel/api of the OS. And indeed,
+this is the case with the language. Development with Rust is great on both Linux and Windows, but it requires a slightly different approach on each of the platforms.
+
+### Linux
+
+Unix-like systems follow the well known philosophy: 'Everything is a file'. Essentially, this means that almost all system internals are exposed as a stream of bytes
+accessible through the OS' filesystem. Since GNU/Linux was written mainly in C, the files representing system internals are usually C structures.
+
+For example, the file which exposes keystroke events at `/dev/input/eventX` is in fact a stream of bytes which make up the the `input_event` struct. This is the original,
+C version of the struct:
+
+```c
+struct input_event {
+    struct timeval time;
+    unsigned short type;
+    unsigned short code;
+    unsigned int value;
+};
+```
+
+If a programming language would want to work with an input event, it would need to cast the bytes making up the struct into it's own binding of the C library. In Rust,
+the official `libc` implementation defines this version of `input_event` struct:
+
+```rust
+pub struct input_event {
+    pub time: ::timeval,
+    pub type_: ::__u16,
+    pub code: ::__u16,
+    pub value: ::__s32,
+}
+```
+
+As depicted, the Rust's version takes the same amount of memory as the C struct - 24 bytes on my computer. So in order to be able to use the `input_event` struct
+in Rust, it needs to be transmuted from an _unsafe_ byte array to a _managed_ one, like that:
+
+```rust
+use libc::input_event;
+
+// Get the size of the Rust's input_event struct
+const EV_SIZE: usize = mem::size_of::<input_event>();
+let mut buf: [u8; EV_SIZE] = unsafe { mem::zeroed() };
+
+// Cast the C struct to empty array
+let ev = unsafe { mem::transmute::<[u8; EV_SIZE], input_event>(buf) };
+```
+
+This approach requires a bit more knowledge from the programmer, but if somebody is going down into system internals they need to understand it in-depth. Moreover,
+in case of some custom or not-yet-implemented C data types, the programmer has freedom to create their own bindings for the said structures.
+
+### Windows
+
+## How long does it takes to develop a Linux/Windows keylogger in Rust?
 
 ## How does Rust handle binary portability/cross-platform compiling?
