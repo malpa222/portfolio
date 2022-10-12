@@ -18,3 +18,6 @@ docs:
       - title: Project plan
         url: "personal/plan"
   - title: Group project
+    children:
+      - title: Project description
+        url: "group/description"
