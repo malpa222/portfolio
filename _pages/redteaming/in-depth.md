@@ -24,6 +24,31 @@ along with the sub-questions:
 
 I will try to answer the main research question by working on each of the sub-questions and producing a multiplatform keylogger written in Rust.
 
+### Research strategies
+
+In order to answer the sub-questions and produce the conclusion of the research I will combine different research strategies. This approach is going to allow me
+to structurize my work and validate the quality of my research.
+
+- Does Rust have native support on Windows/Linux? 
+
+    In order to answer this question I need to look into the history of the language, supported platforms and current frameworks (if any). Moreover, I need to develop software
+    which works close with the system internals to be able to produce a meaningful answer. To research supported platforms I will use the Library strategy. With the Library
+    research results I am going to continue to the Lab strategy to test if the Library research was indeed correct.
+
+- How long does it takes to develop a malware in Rust?
+
+    This research questions will require the combination of Library, Workshop and Lab strategies. I will use Library to find how to develop malware on Linux and Windows.
+    Then, I am going to use that knowledge in the Workshop, to develop the software and validate it in the Lab. The results from the Workshop are going to have the biggest
+    impact on the answer of this research question.
+
+- How does Rust handle binary portability/cross-platform compiling?
+    
+    After having developed the malware, I need to prepare it to work on both Windows and Linux systems. This will require combining knowledge gained from previous research
+    and some additional Library activities which might lead me to new frameworks or techniques for cross-compiling. I am going to test the results in the Lab research strategy.
+
+Having researched all the sub-questions I would be ready to produce the answer to the final question. To do that, I need to use the product of the research in the Lab
+to see if and how does it work and then present it to my peers in the Workshop strategy.
+
 ## Does Rust have native support on Windows/Linux?
 
 Since Rust was created with portability in mind, one would expect the language to be have good support for interacting with the kernel/api of the OS. And indeed,
