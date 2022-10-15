@@ -1,7 +1,7 @@
 ---
 title: Trends research
 layout: single
-permalink: /lo1/trends
+permalink: /redt/trends
 ---
 
 ## What is a trend?

@@ -1,7 +1,7 @@
 ---
 title: Hands-on experience
 layout: collection
-permalink: /handson/
+permalink: redt/handson/
 collection: handson
 classes: wide
 ---

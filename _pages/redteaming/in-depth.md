@@ -1,7 +1,7 @@
 ---
 title: In-depth research
 layout: single
-permalink: /lo1/in-depth
+permalink: /redt/in-depth
 ---
 
 This document is a follow-up on the trends research, precisely on the topic of cross-platform malware. Since virtually everybody in the western world owns a smartphone
