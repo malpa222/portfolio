@@ -21,3 +21,5 @@ docs:
     children:
       - title: Project description
         url: "group/description"
+      - title: Hoefnagels social engineering
+        url: "group/phishing"
