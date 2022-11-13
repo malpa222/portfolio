@@ -42,7 +42,7 @@ to structurize my work and validate the quality of my research.
     impact on the answer of this research question.
 
 - How does Rust handle binary portability/cross-platform compiling?
-    
+
     After having developed the malware, I need to prepare it to work on both Windows and Linux systems. This will require combining knowledge gained from previous research
     and some additional Library activities which might lead me to new frameworks or techniques for cross-compiling. I am going to test the results in the Lab research strategy.
 
