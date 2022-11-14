@@ -31,4 +31,4 @@ The portfolio has been updated with:
 
 * Group project pen test description - [Group project](/group/description)
 * Description of phishing activities done for hoefnagels pen test - [Phishing](/group/phishing)
-* Added windows section to my in-depth research and chose the publication type - [In-depth](/redt/in-depth)
+* Added chose the publication type of my in-depth research - [In-depth](/redt/in-depth)

