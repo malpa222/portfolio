@@ -29,5 +29,5 @@ the most common pen testing tools. We used that research as an input for our rec
 Our initial research gave us the IP ranges of their web shop and the LinkedIn accounts of their employees. During the initial on-site research, our
 team managed to get the IP address of the company itself, which was a great finding since we could use it to target any open services directly.
 
-We have split the tasks among us and delegated each other to different areas. I chose to work on the social engineering part - which meant that
-we had to conduct a phishing campaign. A write-up on my progress is available in the *[phishing](/group/phishing)* section of my portfolio.
+We have split the tasks among us and delegated each other to different areas. Together with Georgi Minchev, I chose to work on the social engineering
+part - which meant that we had to conduct a phishing campaign. A write-up on my progress is available in the *[phishing](/group/phishing)* section of my portfolio.
