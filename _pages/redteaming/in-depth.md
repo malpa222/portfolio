@@ -16,10 +16,10 @@ and much quicker than it ever was.
 Because portable software is a broad subject, I have decided to only focus on some key parts of the domain. My research will try to answer the following question,
 along with the sub-questions:
 
-**Is Rust a good choice for creating a cross-platform malware?**
+**What change does Rust bring to the malware development world?**
 
+- What are the pros and cons of choosing Rust for malware development
 - Does Rust have native support on Windows/Linux?
-- How long does it takes to develop a malware in Rust?
 - How does Rust handle binary portability/cross-platform compiling?
 
 I will try to answer the main research question by working on each of the sub-questions and producing a multiplatform keylogger written in Rust.
@@ -66,54 +66,67 @@ is going to become much better.
 
 But why would a malware developer choose Rust over C? There are couple of the most prominent benefits:
 
-### Speed and memory safety
+- **Speed and memory safety**
 
-The Rust project has been started around a decade ago as a part of the Firefox browser. The language operates on lower level as C/C++ but has a different approach
-to some concepts that C-like languages were historically struggling with. There is no automatic garbage collection; instead, the lifetime of each variable is tracked
-during the compile-time. This approach can catch more memory corruption bugs during early stages of development.
+    The Rust project has been started around a decade ago as a part of the Firefox browser. The language operates on lower level as C/C++ but has a different approach
+    to some concepts that C-like languages were historically struggling with. There is no automatic garbage collection; instead, the lifetime of each variable is tracked
+    during the compile-time. This approach can catch more memory corruption bugs during early stages of development.
     
-Moreover, Rust can compete with C/C++ in memory and speed benchmarks, while providing access to higher level programming concepts as closures, generics and collections
-as zero-cost abstractions.
+    Moreover, Rust can compete with C/C++ in memory and speed benchmarks, while providing access to higher level programming concepts as closures, generics and collections
+    as zero-cost abstractions.
 
-### Static analysis evasion
+- **Static analysis evasion**
 
-As stated before, majority of the malware in existence has been developed using C/C++. This means that for years, security researchers have used and developed software,
-that helps with analysing C/C++ binaries. However, Rust is not using a traditional compiler, but LLVM - a frontend, which provides a layer of abstraction beetwen the
-language and the machine. This benefits both regular and malware developers: the code is faster, and can be obfuscated more easily.
+    As stated before, majority of the malware in existence has been developed using C/C++. This means that for years, security researchers have used and developed software,
+    that helps with analysing C/C++ binaries. However, Rust is not using a traditional compiler, but LLVM - a frontend, which provides a layer of abstraction beetwen the
+    language and the machine. This benefits both regular and malware developers: the code is faster, and can be obfuscated more easily.
 
-Since all security endpoints have been naturally designed to analyze C/C++ programs, Rust can pass under the radar as the signatures are not widespread. Furthermore,
-the compiled binary can be more complex than the C/C++ one because of the novel approach to some programming concepts.
+    Since all security endpoints have been naturally designed to analyze C/C++ programs, Rust can pass under the radar as the signatures are not widespread. Furthermore,
+    the compiled binary can be more complex than the C/C++ one because of the novel approach to some programming concepts.
 
-```rust
-fn main() {
-    let range = 0..100;
+    ```rust
+    fn main() {
+        let range = 0..100;
 
-    // iterate through the range using anonymous functions
-    range.for_each(|num| match num {
-        x if x % 3 == 0 => println!("fizz"),
-        x if x % 5 == 0 => println!("buzz"),
-        x if x % 15 == 0 => println!("fizzbuzz"),
-        _ => println!("{}", num),
-    });
-}
-```
+        // iterate through the range using anonymous functions
+        range.for_each(|num| match num {
+            x if x % 3 == 0 => println!("fizz"),
+            x if x % 5 == 0 => println!("buzz"),
+            x if x % 15 == 0 => println!("fizzbuzz"),
+            _ => println!("{}", num),
+        });
+    }
+    ```
 
-[ add picture of disassembled binary ]
+    [ add picture of disassembled binary ]
 
-The code above is using high-level features for a trivial task. Of course, this is just an example, yet the binary is a bit more complex due to  the
-use of closures and pattern matching for a fizzbuzz. Rust already puts a lot of memory management into the hands of the compiler, and closures make
-it even more complex.
+    The code above is using high-level features for a trivial task. Of course, this is just an example, yet the binary is a bit more complex due to  the use of closures
+    and pattern matching for a fizzbuzz. 
 
-Rust is significantly harder to reverse engineer, since the compiler injects a lot of memory management related code that does error checking for the
-programmer. If a security researcher would try to reverse engineer a Rust binary, they would need to get through tons of machine generated instructions.
-And even a slightest change in the source code could drastically change the executable.
+    It is significantly harder to reverse engineer such program, since the compiler injects a lot of memory management related code
+    that does error checking for the programmer. If a security researcher would try to reverse engineer a Rust binary, they would need to get through tons of machine 
+    generated instructions. And even a slightest change in the source code could drastically change the executable.
 
-### Cross-compatibility
+- **Cross-platform compatibility**
+
+    The language was designed to work on _[multiple platforms](https://doc.rust-lang.org/nightly/rustc/platform-support.html)_ without rewriting the whole codebase or going
+    through a complex compiling process (mainly thanks to LLVM). Moreover, Rust has quite good support for embedded devices, and it is possible to compile a program without
+    the whole standard library. That makes the executable much smaller which is always desired by malware developers.
+        
+### Conclusions
+
+Rust has some new approaches to common programming concepts which have been causing problems for many years. Because of that, and its low-level nature it seems like a great fit
+for malware development: zero-cost abstractions for high-level concepts, speed on a C/C++, a compiler catching memory leaks in the development and a lot of freedom and flexibility
+for creating viruses for different systems and devices.
+
+This does not come without a cost - the learning curve is very steep in the beginning only to become more gradual after the initial barrier. This makes the first-time development
+a long and cumbersome task. Also, the compile times can be very slow, especially for bigger projects, since the compiler is running a borrow checker which tracks a lifetime of every
+variable in the program.
 
 ## Does Rust have native support on Windows/Linux?
 
 Since Rust was created with portability in mind, one would expect the language to be have good support for interacting with the kernel/api of the OS. And indeed,
-this is the case with the language. Development with Rust is great on both Linux and Windows, but it requires a slightly different approach on each of the platforms.
+this is the case with the language. Development with Rust is quite straightforward on both Linux and Windows, but it requires a slightly different approach on each of the platforms.
 
 ### Linux
 
