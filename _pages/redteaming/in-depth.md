@@ -16,6 +16,8 @@ and much quicker than it ever was.
 Because portable software is a broad subject, I have decided to only focus on some key parts of the domain. My research will try to answer the following question,
 along with the sub-questions:
 
+**How does choosing Rust over C changes the malware development process and results?**
+
 **What change does Rust bring to the malware development world?**
 
 - What are the pros and cons of choosing Rust for malware development
