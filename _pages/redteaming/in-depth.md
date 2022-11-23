@@ -18,35 +18,32 @@ along with the sub-questions:
 
 **How does choosing Rust over C changes the malware development process and results?**
 
-**What change does Rust bring to the malware development world?**
-
-- What are the pros and cons of choosing Rust for malware development
-- Does Rust have native support on Windows/Linux?
-- How does Rust handle binary portability/cross-platform compiling?
-
-I will try to answer the main research question by working on each of the sub-questions and producing a multiplatform keylogger written in Rust.
+- Why would a malware developer choose Rust over C?
+- How does programming in Rust affect static analysis?
+- How does Rust handle binary portability?
 
 ### Research strategies
 
 In order to answer the sub-questions and produce the conclusion of the research I will combine different research strategies. This approach is going to allow me
 to structurize my work and validate the quality of my research.
 
-- **What are the pros and cons of choosing Rust for malware development**
+- **Why would a malware developer choose Rust over C?**
 
-    This research questions will require the combination of Library, Workshop and Lab strategies. I will use Library to find how to develop malware on Linux and Windows.
-    Then, I am going to use that knowledge in the Workshop, to develop the software and validate it in the Lab. The results from the Workshop are going to have the biggest
-    impact on the answer of this research question.
+    This research questions will require the combination of Library, Workshop and Lab strategies. I will use Library to research what are the most important aspects of
+    language used for malware development. Then, I am going to use that knowledge in the Workshop, to develop the software and validate it in the Lab. The results 
+    from the Workshop are going to have the biggest impact on the answer of this research question.
 
-- **Does Rust have native support on Windows/Linux?** 
+- **How does programming in Rust affect static analysis?**
 
-    In order to answer this question I need to look into the history of the language, supported platforms and current frameworks (if any). Moreover, I need to develop software
-    which works close with the system internals to be able to produce a meaningful answer. To research supported platforms I will use the Library strategy. With the Library
-    research results I am going to continue to the Lab strategy to test if the Library research was indeed correct.
+    Static analysis is a primary technique for dissecting and analysing malware samples. To research how Rust might change the the reverse engineering process, I will
+    need to do some Library research on differences between Rust and C compilation process. Then I will take my findings to test in the Lab and the Workshop by reverse
+    engineering a C program and its Rust counterpart. 
 
-- **How does Rust handle binary portability/cross-platform compiling?**
+- **How does Rust handle binary portability?**
 
-    After having developed the malware, I need to prepare it to work on both Windows and Linux systems. This will require combining knowledge gained from previous research
-    and some additional Library activities which might lead me to new frameworks or techniques for cross-compiling. I am going to test the results in the Lab research strategy.
+    Nowadays, with the rise of RaaS, malware developers try to target more and more systems. Therefore, I want to investigate whether and how Rust handles binary portability.
+    To do that, I will use the previous research about Rust's compilation process and further extend it. Then I am going to do some hands-on testing to see if I can re-use
+    my malware on different systems.
 
 Having researched all the sub-questions I would be ready to produce the answer to the final question. To do that, I need to use the product of the research in the Lab
 to see if and how does it work and then present it to my peers in the Workshop strategy.
