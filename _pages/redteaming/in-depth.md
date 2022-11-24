@@ -16,9 +16,9 @@ and much quicker than it ever was.
 Because portable software is a broad subject, I have decided to only focus on some key parts of the domain. My research will try to answer the following question,
 along with the sub-questions:
 
-**How does choosing Rust over C changes the malware development process and results?**
+**How does choosing Rust over C/C++ changes the malware development process and results?**
 
-- Why would a malware developer choose Rust over C?
+- Why would a malware developer choose Rust over C/C++?
 - How does programming in Rust affect static analysis?
 - How does Rust handle binary portability?
 
@@ -48,7 +48,7 @@ to structurize my work and validate the quality of my research.
 Having researched all the sub-questions I would be ready to produce the answer to the final question. To do that, I need to use the product of the research in the Lab
 to see if and how does it work and then present it to my peers in the Workshop strategy.
 
-## What are the pros and cons of choosing Rust for malware development
+## Why would a malware developer choose Rust over C/C++?
 
 Malware development has always revolved around writing low-level code that interacts closely with a kernel of an OS. Linux kernel is written in C and Windows kernel in
 C++. This means that majority of the malware developed throughout the years has been written in C or C++, since it allows for the best compatibility with native APIs.
@@ -80,32 +80,10 @@ But why would a malware developer choose Rust over C? There are couple of the mo
     that helps with analysing C/C++ binaries. However, Rust is not using a traditional compiler, but LLVM - a frontend, which provides a layer of abstraction beetwen the
     language and the machine. This benefits both regular and malware developers: the code is faster, and can be obfuscated more easily.
 
-    Since all security endpoints have been naturally designed to analyze C/C++ programs, Rust can pass under the radar as the signatures are not widespread. Furthermore,
-    the compiled binary can be more complex than the C/C++ one because of the novel approach to some programming concepts.
-
-    ```rust
-    fn main() {
-        let range = 0..100;
-
-        // iterate through the range using anonymous functions
-        range.for_each(|num| match num {
-            x if x % 3 == 0 => println!("fizz"),
-            x if x % 5 == 0 => println!("buzz"),
-            x if x % 15 == 0 => println!("fizzbuzz"),
-            _ => println!("{}", num),
-        });
-    }
-    ```
-
-    [ add picture of disassembled binary ]
-
-    The code above is using high-level features for a trivial task. Of course, this is just an example, yet the binary is a bit more complex due to  the use of closures
-    and pattern matching for a fizzbuzz. 
-
-    It is significantly harder to reverse engineer such program, since the compiler injects a lot of memory management related code
-    that does error checking for the programmer. If a security researcher would try to reverse engineer a Rust binary, they would need to get through tons of machine 
-    generated instructions. And even a slightest change in the source code could drastically change the executable.
-
+    It is significantly harder to statically analyze a Rust program since the compiler injects memory leakage checks into the binary during the compilation process. Resulting
+    file is slightly bigger beacuse it contains much more machine code. This means that the readability of the executable is low in the first place and obfuscation introduces
+    even more entropy into the file.
+        
 - **Cross-platform compatibility**
 
     The language was designed to work on _[multiple platforms](https://doc.rust-lang.org/nightly/rustc/platform-support.html)_ without rewriting the whole codebase or going
