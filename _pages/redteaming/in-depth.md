@@ -163,9 +163,9 @@ loop {
 }
 ```
 
-It's not important to understand what the code does, but rather to notice how much code was hidden by the syntactic sugar. It turns out that the for loop has a hidden conditional
-flow. Morevoer, the `vec!` and `println!` macros are some handy shortcuts which hide elaborate statements. All of this is done to make it easier for the compiler to analyse the
-code.
+It's not important to understand what the code does, but rather to notice how much code was hidden by the syntactic sugar. It turns out that the for loop has is in reality and infinite
+loop with a hidden conditional flow. Morevoer, the `vec!` and `println!` macros are some handy shortcuts which hide elaborate statements. All of this is done to make it easier for the
+compiler to analyse the code.
 
 But how all of this relates to the static analysis?
 
@@ -208,7 +208,7 @@ code flow.
 [LLVM obfuscator]() is a plugin that can be used by `cargo`, the Rust compiler to obfuscate the code flow of the program in the compilation. That way, it is much easier to create
 a unique binary every time it is compiled. Moreover, it makes static analysis much harder since some of the functions are there just to waste time of the researchers.
 
-TODO: Add pictures of building and disassembly
+_TODO: Add pictures of building and disassembly_
 
 To use the plugin I had to build LLVM and the plugin itself, and then create a custom Rust toolchain with the toolchain manager `rustc`. However, as depicted on the picture below
 the effort paid off and a very crude and simple program became something much more complex.
@@ -226,61 +226,4 @@ What does it mean in the favor of Rust? Well, the executables contain a lot of m
 the code and expanding macros. This means that the binaries become much harder to analyse, coming from the C/C++ landscape. Moreover, with the obfuscation, the task becomes even
 harder.
 
-## Does Rust have native support on Windows/Linux?
-
-Since Rust was created with portability in mind, one would expect the language to be have good support for interacting with the kernel/api of the OS. And indeed,
-this is the case with the language. Development with Rust is quite straightforward on both Linux and Windows, but it requires a slightly different approach on each of the platforms.
-
-### Linux
-
-Unix-like systems follow the well known philosophy: 'Everything is a file'. Essentially, this means that almost all system internals are exposed as a stream of bytes
-accessible through the OS' filesystem API. Since GNU/Linux was written mainly in C, the files representing system internals are C structures most of the time.
-
-For example, the file which exposes keystroke events at `/dev/input/eventX` is in fact a stream of bytes which make up the the `input_event` struct. This is the original,
-C version of the struct:
-
-```c
-struct input_event {
-    struct timeval time;
-    unsigned short type;
-    unsigned short code;
-    unsigned int value;
-};
-```
-
-If a programming language would want to work with an input event, it would need to cast the bytes making up the struct into it's own binding of the C library. In Rust,
-the official `libc` implementation defines this version of `input_event` struct:
-
-```rust
-pub struct input_event {
-    pub time: ::timeval,
-    pub type_: ::__u16,
-    pub code: ::__u16,
-    pub value: ::__s32,
-}
-```
-
-As depicted, the Rust's version takes the same amount of memory as the C struct - 24 bytes on my computer. So in order to be able to use the `input_event` struct
-in Rust, it needs to be transmuted from an _unsafe_ byte array to a _managed_ one, like that:
-
-```rust
-use libc::input_event;
-
-// Get the size of the Rust's input_event struct
-const EV_SIZE: usize = mem::size_of::<input_event>();
-let mut buf: [u8; EV_SIZE] = unsafe { mem::zeroed() };
-
-// Cast the C struct to empty array
-let ev = unsafe { mem::transmute::<[u8; EV_SIZE], input_event>(buf) };
-```
-
-This approach requires a bit more knowledge from the programmer, but if somebody is going down into system internals they need to understand it in-depth. Moreover,
-in case of some custom or not-yet-implemented C data types, the programmer has freedom to create their own bindings for the said structures.
-
-Below, you can take a look at a small demo. The keylogger is intercepting and printing out my keystrokes.
-
-{% include video id="772185525" provider="vimeo" %}
-
-### Windows
-
-## How does Rust handle binary portability/cross-platform compiling?
+## How does Rust handle binary portability?
