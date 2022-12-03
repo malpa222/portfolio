@@ -169,6 +169,69 @@ compiler to analyse the code.
 
 But how all of this relates to the static analysis?
 
+After lexing and desugaring the code, the compiler enters  the next stage - semantic analysis. This is one of the Rust's biggest strengths. The code is validated and the borrow checker
+tracks lifetime of each variable to catch any possible memory leaks. Then the compiler enters the optimisation and code generation stages. Because LLVM is language agnostic, it requires
+the compiler to translate the code into an intermediate representation (IR). This IR is going to be processed by the LLVM: optimised and compiled on the selected platform. And the IR is
+where obfuscation comes into the picture.
+
+### Control flow flattening
+
+However, before I will explain how to obfuscate LLVM's IR I need to make a detour to talk about an interesting way of making the compiled code more incomprehensible for the reverse
+engineers. Control flow flattening breaks up a programs structure into basic blocks - sets of instructions with only one entry and exit point. Then these instructions are taken
+from different nesting levels and placed next to each other. Take this basic program as an example:
+
+```c
+int i = 0;
+
+while (i < 100) 
+{
+    important_function();
+    i++;
+}
+```
+
+And this is how it might look like when control flow flattening was applied
+
+```c
+int i = 0;
+int swFlag = 1; // create a switch flag
+
+while (swFlag != 0) 
+{
+    switch (swFlag)
+    {
+        case 1:
+            i = 1;
+
+            swFlag = 2;
+            break;
+        case 2:
+            if (i <= 100)
+                swFlag = 3;
+            else
+                swFlag = 0;
+
+            break;
+        case 3:
+            important_function();
+            i++;
+
+            swVar = 2;
+            break;
+    }
+}
+```
+
+These two pieces of code accomplish the same task! They are however much more different in how they perform it. Therefore the program's structure is going to differ.
+
+// TODO: CHANGE PIC
+
+| ![Control flow flattening](../../assets/img/indepth/control_flow_graph.png) |
+| Control flow flattening |
+
+[This paper]() explains control flow flattenning in depth, dealing with `try ... catch` and `switch` clauses, as well as proposes an algorithm which could obfuscate 
+the binary during the compile time. Since this is a task which can be performed during the compile time, the algorithm needs to be implemented in a compiler. 
+
 ### Obfuscating LLVM
 
 After lexing and desugaring the code, the compiler enters the next stage - semantic analysis. This is one of the Rust's biggest strengths. The code is validated and the borrow 
