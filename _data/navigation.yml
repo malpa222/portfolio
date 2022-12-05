@@ -11,6 +11,8 @@ docs:
         url: "redt/trends"
       - title: In-depth research
         url: "redt/in-depth"
+      - title: Publication
+        url: "redt/publication"
       - title: Hands-on experience
         url: "redt/handson"
   - title: Personal project

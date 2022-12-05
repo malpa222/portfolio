@@ -114,8 +114,8 @@ since the less is known about a malware, the higher the chance that it will snea
 ### Compilation process
 
 LLVM is a set of compiler and toolchain technologies that can be used for developing programming languages. The main advantage of using LLVM comes from using it as a front-end
-of the programming language. In essence, this means that LLVM performs code analysis and transforms it into an intermediate representation (IR), which makes the the Rust compiler,
-in a way, platform agnostic.
+of the programming language. In essence, this means that LLVM performs code analysis and transforms it into a bytecode which can be compiled by any compiler. In a way, this makes 
+the the Rust compiler platform agnostic.
 
 A compilation process consists of these steps:
 
@@ -125,7 +125,7 @@ A compilation process consists of these steps:
 4. Optimisation
 5. Code generation
 
-Lexical analysis creates so called `tokens` which are then processed by the parser to build abstract syntax tree (AST). At the parsing  stage, the compiler expands macros and de-sugars
+Lexical analysis creates so called `tokens` which are then processed by the parser to build abstract syntax tree. At the parsing  stage, the compiler expands macros and de-sugars
 the code. So the following instructions:
 
 ```rust
@@ -169,125 +169,50 @@ compiler to analyse the code.
 
 But how all of this relates to the static analysis?
 
-After lexing and desugaring the code, the compiler enters  the next stage - semantic analysis. This is one of the Rust's biggest strengths. The code is validated and the borrow checker
-tracks lifetime of each variable to catch any possible memory leaks. Then the compiler enters the optimisation and code generation stages. Because LLVM is language agnostic, it requires
-the compiler to translate the code into an intermediate representation (IR). This IR is going to be processed by the LLVM: optimised and compiled on the selected platform. And the IR is
-where obfuscation comes into the picture.
+### Optimization passes
 
-### Control flow flattening
+After desugaring and lexing, LLVM produces a `.ll` file, which contains bytecode referred to as _Intermediate Representation_ (IR). This file can be then compiled with any LLVM compatible
+backend. The nature of LLVM allows developers to write passes that will process the IR. This can be leveraged by malware developers to obfuscate the executables. LLVM documentation provides
+a guide on how to write these passes
 
-However, before I will explain how to obfuscate binaries in LLVM I need to make a detour to talk about an interesting way of making the compiled code more incomprehensible for the reverse
-engineers. Control flow flattening breaks up a programs structure into basic blocks - sets of instructions with only one entry and exit point. Then these instructions are taken
-from different nesting levels and placed next to each other. Take this basic program as an example:
+Therefore I have decided to create a simple pass that will substitute some arithmetic operations of the IR bytecode. This is just a proof of concept to show 
+the modularity of LLVM.
 
-```c
-int i = 0;
+```cpp
+// RandomSeed.cpp
 
-while (i < 100) 
-{
-    important_function();
-    i++;
+#include "llvm/Pass.h"
+#include "llvm/IR/Function.h"
+#include "llvm/Support/raw_ostream.h"
+
+using namespace llvm;
+
+namespace {
+    struct Substitution : public FunctionPass {
+        static char ID;
+        Substitution() : FunctionPass(ID) {}
+
+        bool runOnFunction(Function &F) override {
+            bool changed = false;
+    
+            return changed;
+        }
+    };
 }
+
+char Substitution::ID = 0;
+
+static RegisterPass<Substitution> X("Substitution", "Instruction substitution");
 ```
-
-And this is how it might look like when control flow flattening was applied
-
-```c
-int i = 0;
-int swFlag = 1; // create a switch flag
-
-while (swFlag != 0) 
-{
-    switch (swFlag)
-    {
-        case 1:
-            i = 1;
-
-            swFlag = 2;
-            break;
-        case 2:
-            if (i <= 100)
-                swFlag = 3;
-            else
-                swFlag = 0;
-
-            break;
-        case 3:
-            important_function();
-            i++;
-
-            swVar = 2;
-            break;
-    }
-}
-```
-
-These two pieces of code accomplish the same task! They are however much more different in how they perform it. Therefore the program's structure is going to differ.
-
-// TODO: CHANGE PIC
-
-| ![Control flow flattening](../../assets/img/indepth/control_flow_graph.png) |
-| Control flow flattening |
-
-[This paper](https://www.inf.u-szeged.hu/~akiss/pub/fulltext/laszlo2007obfuscating.pdf) explains control flow flattenning in depth, dealing with  more complex concepts like the
-`try ... catch` and `switch` clauses, as well as proposes an algorithm which  could obfuscate  the binary during the compile time. Since this is a task which can be performed 
-during the compile time, the algorithm needs to be implemented in a compiler. This means that control flow flattening can be well applied to LLVM as a plugin.
-
-### Obfuscating LLVM
-
-After lexing and desugaring the code, the compiler enters the next stage - semantic analysis. This is one of the Rust’s biggest strengths. The code is validated and the borrow 
-checker tracks lifetime of each variable to catch any possible memory leaks. Then the compiler enters the optimisation and code generation stages. Because LLVM is language
-agnostic, it requires the compiler to translate the code into an intermediate representation (IR). This IR is going to be processed by the LLVM, optimised and compiled on
-the selected platform. And the IR is where the obfuscation takes place.
-
-`obfuscation/src/main.rs`
-
-```rust
-fn main() {
-    let arr = vec!["1", "2", "3"];
-
-    for num in arr {
-        println!("{}", num);
-    }
-}
-```
-
-Compiling the program with `cargo build --release` and running the program is going to give us the following output.
-
-```
-$ cargo run --quiet
-1
-2
-3
-```
-
-And the binary from the release build can be found at `obfuscation/target/release/`.
-
-| ![Disassembled binary](../../assets/img/indepth/disas_1.png) |
-| Disassembled binary |
-
-The graph and generated code is very straightforward. Even though the macros expanded to much more code, IR was optimised by LLVM and created a neat executable with very simple 
-code flow.
-
-[LLVM obfuscator]() is a plugin that can be used by `cargo`, the Rust compiler to obfuscate the code flow of the program in the compilation. That way, it is much easier to create
-a unique binary every time it is compiled. Moreover, it makes static analysis much harder since some of the functions are there just to waste time of the researchers.
-
-_TODO: Add pictures of building and disassembly_
-
-To use the plugin I had to build LLVM and the plugin itself, and then create a custom Rust toolchain with the toolchain manager `rustc`. However, as depicted on the picture below
-the effort paid off and a very crude and simple program became something much more complex.
-
-| ![Obfuscated program](../../assets/img/indepth/disas_2.png) |
-| Obfuscated program |
+LLVM works with C just as good as with Rust, so the plugin can be applied to both languages. This shows how easy it might be to add an obfuscation step to the
+compilation process.
 
 ### Conclusions
 
-There is no other way of avoiding static analysis than increasing the entropy of the binary, adding pointless functions and trying to mislead the researcher as much as possible.
-This is not a future-proof approach, as this is mainly 'security by obscurity'. However, this can buy time for hackers, and that is the most valuable resource - they can infect
-bigger portions of the systems and extract more information.
+LLVM can be used for binary obfuscation in a few different ways. One way is to use LLVM's intermediate representation (IR) to transform the program's code in a way that makes it 
+more difficult to understand. The IR can be used to rename variables and functions, reorder code blocks, or insert additional code that has no effect on the program's behavior. 
+By using LLVM as a common framework for these techniques, it is possible to create complex and effective binary obfuscation strategies.
 
-What does it mean in the favor of Rust? Well, the executables contain a lot of machine code that is injected by the compiler to facilitate memory leak prevention, de-sugarizing
-the code and expanding macros. This means that the binaries become much harder to analyse, coming from the C/C++ landscape. Moreover, with the obfuscation, the task becomes even
-harder.
+And with Rust's native support for LLVM, a team of skilled malware developers can really increase their chances of making their program 'irreversible'
 
 ## How does Rust handle binary portability?
