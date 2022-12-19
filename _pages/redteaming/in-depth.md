@@ -16,11 +16,11 @@ and much quicker than it ever was.
 Because portable software is a broad subject, I have decided to only focus on some key parts of the domain. My research will try to answer the following question,
 along with the sub-questions:
 
-**How does choosing Rust over C/C++ changes the malware development process and results?**
+**How can LLVM compiler infrastructure be used to aid malware development?**
 
 - Why would a malware developer choose Rust over C/C++?
 - How does programming in Rust affect static analysis?
-- How does Rust handle binary portability?
+- Why would a malware choose to work with languages using LLVM-based compilers?
 
 ### Research strategies
 
@@ -39,11 +39,11 @@ to structurize my work and validate the quality of my research.
     need to do some Library research on differences between Rust and C compilation process. Then I will take my findings to test in the Lab and the Workshop by reverse
     engineering a C program and its Rust counterpart. 
 
-- **How does Rust handle binary portability?**
+- **Can the compilation process of the LLVM based compilers be used for malware development purposes?**
 
-    Nowadays, with the rise of RaaS, malware developers try to target more and more systems. Therefore, I want to investigate whether and how Rust handles binary portability.
-    To do that, I will use the previous research about Rust's compilation process and further extend it. Then I am going to do some hands-on testing to see if I can re-use
-    my malware on different systems.
+    Rust is a very recent case of a programming language built on the LLVM toolchain. However, this is not the only one. Many programming languages are built using the
+    LLVM toolchain. The framework allows for a lot of flexibility and is very modular. Therefore, I want to investigate how it works and how it can be used by the malware
+    developers.
 
 Having researched all the sub-questions I would be ready to produce the answer to the final question. To do that, I need to use the product of the research in the Lab
 to see if and how does it work and then present it to my peers in the Workshop strategy.
@@ -70,7 +70,7 @@ But why would a malware developer choose Rust over C? There are couple of the mo
     The Rust project has been started around a decade ago as a part of the Firefox browser. The language operates on lower level as C/C++ but has a different approach
     to some concepts that C-like languages were historically struggling with. There is no automatic garbage collection; instead, the lifetime of each variable is tracked
     during the compile-time. This approach can catch more memory corruption bugs during early stages of development.
-    
+
     Moreover, Rust can compete with C/C++ in memory and speed benchmarks, while providing access to higher level programming concepts as closures, generics and collections
     as zero-cost abstractions.
 
@@ -83,13 +83,13 @@ But why would a malware developer choose Rust over C? There are couple of the mo
     It is significantly harder to statically analyze a Rust program since the compiler injects memory leakage checks into the binary during the compilation process. Resulting
     file is slightly bigger beacuse it contains much more machine code. This means that the readability of the executable is low in the first place and obfuscation introduces
     even more entropy into the file.
-        
+
 - **Cross-platform compatibility**
 
     The language was designed to work on _[multiple platforms](https://doc.rust-lang.org/nightly/rustc/platform-support.html)_ without rewriting the whole codebase or going
     through a complex compiling process (mainly thanks to LLVM). Moreover, Rust has quite good support for embedded devices, and it is possible to compile a program without
     the whole standard library. That makes the executable much smaller which is always desired by malware developers.
-        
+
 ### Conclusions
 
 Rust has some new approaches to common programming concepts which have been causing problems for many years. Because of that, and its low-level nature it seems like a great fit
@@ -103,40 +103,33 @@ variable in the program.
 ## How does programming in Rust affect static analysis?
 
 There are two main types of malware analysis: dynamic and static. Dynamic analysis tries to inspect a malware sample by running it (usually in a sandboxed environment). The main
-advantage of this approach is the ability to atatch a debugger to the process and to take a closer look at the program during the runtime. The static analysis however relies on
-inspecting and reverse engineering the compiled executable without running it. This process can reveal execution flows and hidden data which would not be accesible during the 
+advantage of this approach is the ability to attach a debugger to the process and to take a closer look at the program during the runtime. The static analysis however relies on
+inspecting and reverse engineering the compiled executable without running it. This process can reveal execution flows and hidden data which would not be accessible during the 
 runtime.
 
 Therefore, apart from creating the logic for malware, the developers need to account for the fact that their software will be analysed by security researchers. This is not desired,
 since the less is known about a malware, the higher the chance that it will sneak under AVs and will manage to infect more users. While avoiding dynamic analysis is more or less
- the same in C and in Rust, the biggest differences can be seen in the static analysis part of reverse engineering.
+the same in C and in Rust, the biggest differences can be seen in the static analysis part of reverse engineering.
 
-### Compilation process
+### Syntax sugar and macros
 
-LLVM is a set of compiler and toolchain technologies that can be used for developing programming languages. The main advantage of using LLVM comes from using it as a front-end
-of the programming language. In essence, this means that LLVM performs code analysis and transforms it into a bytecode which can be compiled by any compiler. In a way, this makes 
-the the Rust compiler platform agnostic.
+Because Rust is a modern language, it tries to make low-level development easier for the programmer. It uses a lot of high-level programming concepts such as anonymous
+functions, iterators, generics etc. Moreover the language has a big support for macros, which make meta-programming a bit easier for the developers. Another big feature of
+the language is the novel approach to memory management. The compiler has a borrow checker - a tool that tracks the lifetime of each variable to ensure that there will be
+no memory leakage in the code. Such amount of high-level and complicated concepts requires a lot of syntax sugar, and hiding the 'guts' of the language away from the
+programmer.
 
-A compilation process consists of these steps:
-
-1. Lexical analysis
-2. Parsing
-3. Semantic analysis
-4. Optimisation
-5. Code generation
-
-Lexical analysis creates so called `tokens` which are then processed by the parser to build abstract syntax tree. At the parsing  stage, the compiler expands macros and de-sugars
-the code. So the following instructions:
+Let's take a look at a simple program that iterates over an array and prints its contents:
 
 ```rust
-let arr = vec!["1", "2", "3"];
+let arr = vec![1, 2, 3]; // vec! is a macro that creates a vector
 
 for num in arr {
-    println!("{}", num);
+    println!("{}", num); // println! is a macro that prints to stdout
 }
 ```
 
-are in reality a sugar coating for more elaborate statements.
+The macros and the for loop are actually a sugar coating for a more elaborate control flow which is expanded during the compile time.
 
 ```rust
 // expansion of the vec! macro
@@ -148,8 +141,8 @@ let mut iter = IntoIterator::into_iter(arr);
 loop {
     match iter.next() { // match the next iterator
         Some(num) => {
-            // expansion of the println! macro
             {
+                // expansion of the println! macro
                 ::std::io::_print(
                     ::core::fmt::Arguments::new_v1(
                         &["", "\n"],
@@ -163,9 +156,56 @@ loop {
 }
 ```
 
-It's not important to understand what the code does, but rather to notice how much code was hidden by the syntactic sugar. It turns out that the for loop has is in reality and infinite
-loop with a hidden conditional flow. Morevoer, the `vec!` and `println!` macros are some handy shortcuts which hide elaborate statements. All of this is done to make it easier for the
-compiler to analyse the code.
+It's not important to understand what the code does but rather to notice how many statements were expanded by the compiler during the build process. The for loop is an infinite
+loop that has a hidden conditional flow, and `vec!` and `println!` macros are handy shortcuts that allow the programmers to delegate some work to the compiler instead of
+worrying about the type safety.
+
+### Borrow checker and static analysis
+
+The flagship feature of the language is the borrow checker. The borrow checker is embedded in the compiler and it changes the way the developers work with the memory of
+the program. Instead of manually allocating and freeing up the memory for variables, the compilers assigns ownership to them. That way, there are no 'dangling pointers' in
+which can lead to memory leakage or corruption (usually).
+
+This is a complex process that makes the compiler inject a lot of code into the program, to facilitate memory management. This results in a lot of machine generated code
+that makes no sense at first and really inflates even a simple program. Take this implementation of 'FizzBuzz':
+
+```rust
+fn main() {
+    for i in 0..100 {
+        if i % 15 == 0 {
+            println!("fizzbuzz");
+        } else if i % 3 == 0 {
+            println!("fizz");
+        } else if i % 5 ==  0 {
+            println!("buzz");
+        }
+    }
+}
+```
+
+After compiling it with `cargo build --release` and decompiling the resulting binary, IDA presents this graph:
+
+| ![Program disassembly](../../assets/img/indepth/disas_main.png) |
+| Program disassembly |
+
+The resulting graph is very huge, and seems too big for the amount of instructions we wrote in our program. This is mainly due to the borrow checker injecting boiler plate code
+
+### Compilation process
+
+LLVM is a set of compiler and toolchain technologies that can be used for developing programming languages. The main advantage of using LLVM comes from using it as a front-end
+of the programming language. In essence, this means that LLVM performs code analysis and transforms it into a bytecode which can be compiled by any compiler. In a way, this makes 
+the Rust compiler platform agnostic.
+
+A compilation process consists of these steps:
+
+1. Lexical analysis
+2. Parsing
+3. Semantic analysis
+4. Optimisation
+5. Code generation
+
+Lexical analysis creates so called `tokens` which are then processed by the parser to build abstract syntax tree. At the parsing  stage, the compiler expands macros and de-sugars
+the code. So the following instructions:
 
 But how all of this relates to the static analysis?
 
@@ -193,9 +233,7 @@ namespace {
         Substitution() : FunctionPass(ID) {}
 
         bool runOnFunction(Function &F) override {
-            bool changed = false;
-    
-            return changed;
+            return false;
         }
     };
 }
@@ -204,6 +242,7 @@ char Substitution::ID = 0;
 
 static RegisterPass<Substitution> X("Substitution", "Instruction substitution");
 ```
+
 LLVM works with C just as good as with Rust, so the plugin can be applied to both languages. This shows how easy it might be to add an obfuscation step to the
 compilation process.
 
@@ -215,4 +254,11 @@ By using LLVM as a common framework for these techniques, it is possible to crea
 
 And with Rust's native support for LLVM, a team of skilled malware developers can really increase their chances of making their program 'irreversible'
 
-## How does Rust handle binary portability?
+## How does Rust's binary portability relate to modern malware development?
+
+Binary portability is an ability of program to run on different platforms without requiring any modifications. To achieve cross platform portability, the program must be written in a
+language that compiles to platform-agnostic bytecode. Rust uses LLVM for that, which means that the LLVM's IR can be then easily compiled for any platform, as described in the previous
+section. Moreover, with `rustc`, a frontend for LLVM, programmers can compile code for different platforms and/or processor architectures by supplying one additional flag to the command:
+`--target`. This allows building code for platforms that developers don't have access to.
+
+In November of 2021, first samples of the BlackCat
