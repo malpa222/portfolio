@@ -1,12 +1,51 @@
 ---
-title: Control flow flattening
+title: Obfuscating malware with LLVM
 layout: single
 permalink: /redt/publication
 ---
 
+While developing malware, you will probably need to somehow make your binaries harder to reverse engineer. That way, your programs might be able to live in the victim's
+system for much longer unnoticed. But how can that be achieved? Well historically, it usually boiled down to encrypting or splitting strings in the code so that this:
+
+```c
+normal code
+```
+
+becomes this:
+
+```c
+code with split strings
+```
+
+As you can see, this makes a program a bit harder to understand while developing. And this is just the top of the iceberg - when introducing more complex ideas as changing
+the control flow of the program, the readability of the code degrades and the effort is just not worth it. But there must be a better way, right?
+
+### Optimizing the compilation process
+
+Right now, people have been mostly obfuscating their programs in a _caveman_ style. However, there are tools that could automate and streamline the obfuscation process. 
+Or at least make it much easier for the developers.
+
+Let's take a step aside and look at the traditional compilation process. The compilers usually start with code analysis which looks like this:
+
+1. Perform a lexical analysis and create 'symbols' of the code. Then build an Abstract Syntax Tree (AST) using the 'symbols'
+2. Perform a semantic analysis on the AST and verify whether the statements make sense or not
+3. Optimize the AST
+4. Generate machine instructions for the host CPU
+
+In most compilers the 3rd and 4th step are tightly coupled - When the AST is optimized, the compiler will then proceed to generate instructions for the machine it is running on.
+A slightly more flexible idea of compilation is utilized by **LLVM** - a set of compiler and toolchain technologies that allows developers to create programming langauges that
+are platform agnostic. Furthermore LLVM accepts modules that can process an abstract assembly language - Intermediate Representation (IR).
+
+| ![LLVM Optimization Pipeline](../../assets/img/indepth/llvm_pipeline.jpeg) |
+| LLVM Optimization Pipeline |
+
+However this optimization can also be used for implementing some automated obfuscation techniques, so that the readability of the code persists and only the machine instructions
+are being altered.
+
+### Out of tree pass development
+
 However, before I will explain how obfuscation process can be streamlined with LLVM. I need to make a detour to talk about an interesting way of making the compiled code more
-incomprehensible for the reverse engineers. Control flow flattening breaks up a programs structure into basic blocks - sets of instructions with only one entry and exit point. Then these instructions are taken
-from different nesting levels and placed next to each other. Take this basic program as an example:
+incomprehensible for the reverse engineers. Control flow flattening breaks up a programs structure into basic blocks - sets of instructions with only one entry and exit point. Then these instructions are taken from different nesting levels and placed next to each other. Take this basic program as an example:
 
 ```c
 int i = 0;

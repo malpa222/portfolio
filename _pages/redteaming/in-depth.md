@@ -188,7 +188,7 @@ After compiling it with `cargo build --release` and decompiling the resulting bi
 | ![Program disassembly](../../assets/img/indepth/disas_main.png) |
 | Program disassembly |
 
-The resulting graph is very huge, and seems too big for the amount of instructions we wrote in our program. This is mainly due to the borrow checker injecting boiler plate code
+The resulting graph is very huge, and seems too big for the amount of instructions we wrote in our program. This is mainly due to the borrow checker injecting boiler plate code.
 
 ### Compilation process
 
