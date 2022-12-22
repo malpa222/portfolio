@@ -19,20 +19,8 @@ take a look at resources provided in the references section.
 ## Why obfuscate?
 
 While developing malware, you will probably need to somehow make your binaries harder to reverse engineer. That way, your programs might be able to live in the victim's
-system for much longer unnoticed. But how can that be achieved? Well historically, it usually boiled down to encrypting or splitting strings in the code so that this:
-
-```c
-normal code
-```
-
-becomes this:
-
-```c
-code with split strings
-```
-
-As you can see, this makes a program a bit harder to understand while developing. And this is just the top of the iceberg - when introducing more complex ideas as changing
-the control flow of the program, the readability of the code degrades and the effort is just not worth it. But there must be a better way, right?
+system for much longer unnoticed. But how can that be achieved? Well historically, it usually boiled down to encrypting or splitting strings in the code. This makes a program
+a bit harder to understand while developing. And this is just the top of the iceberg - when introducing more complex ideas as changing the control flow of the program, the readability of the code degrades and the effort is just not worth it. But there must be a better way, right?
 
 ## Optimizing the compilation process
 
