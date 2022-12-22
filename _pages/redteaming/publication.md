@@ -4,6 +4,20 @@ layout: single
 permalink: /redt/publication
 ---
 
+### Pre-requisites
+
+**Disclaimer**: this article does not talk about a lot of boilerplate code/knowledge required to start developing plugins for LLVM system.
+[My repository](https://github.com/malpa222/llvm-obfuscation) is a good start for playing around with the tools. If you want to dive deeper into the infrastructure 
+take a look at resources provided in the references section.
+
+- A clone of [this repository](https://github.com/malpa222/llvm-obfuscation). Keep this repo at hand because I am going to refer to certain files in the article.
+- C/C++ compiler (preferably clang because we want to take a look at LLVM's intermediate representation)
+- CMake and a build tool (preferably ninja) for building the project
+- LLVM and opt for loading our plugins
+- llc for compiling LLVM's byte code
+
+## Why obfuscate?
+
 While developing malware, you will probably need to somehow make your binaries harder to reverse engineer. That way, your programs might be able to live in the victim's
 system for much longer unnoticed. But how can that be achieved? Well historically, it usually boiled down to encrypting or splitting strings in the code so that this:
 
@@ -36,43 +50,31 @@ In most compilers the 3rd and 4th step are tightly coupled - When the AST is opt
 A slightly more flexible idea of compilation is utilized by **LLVM** - a set of compiler and toolchain technologies that allows developers to create programming languages that
 are platform agnostic. Furthermore LLVM accepts modules that can process an abstract assembly language - Intermediate Representation (**IR**).
 
-| ![LLVM Optimization Pipeline](../../assets/img/indepth/llvm_pipeline.jpeg) |
+| ![LLVM Optimization Pipeline](../../assets/img/publication/llvm_pipeline.jpeg) |
 | LLVM Optimization Pipeline |
 
 However this optimization can also be used for implementing some automated obfuscation techniques, so that the readability of the code persists and only the machine instructions
 are being altered.
 
-### Developing plugins out of tree
-
-**Disclaimer**: this article does not talk about a lot of boilerplate code/knowledge required to start developing plugins for LLVM system.
-[My repository](https://github.com/malpa222/llvm-obfuscation) is a good start for playing around with the tools. If you want to dive deeper into the infrastructure 
-take a look at resources provided in the references section.
+### Developing plugins for LLVM
 
 Let's take a look on how to implement a simple pass (yet another name for a plugin in the LLVM lingo). The pass is going to transform the IR and substitute instructions
-to make them harder to reverse engineer. For that we will need couple of things:
-
-- A clone of [this repository](https://github.com/malpa222/llvm-obfuscation) for a quick-start with the development
-- C/C++ compiler (preferably clang because we want to take a look at LLVM's intermediate representation)
-- CMake and a build tool (preferably ninja) for building the project
-- LLVM and OPT for loading our plugins
-
-We will test our pass on a very simple LLVM IR. The code in `examples/start.ll` defines two functions that either `add` or `sub` provided parameters and return the outcome.
+to make them a bit more annoying to reverse engineer. We will test our pass on a very simple LLVM IR. The code in `examples/start.ll` defines two functions that either
+`add` or `sub` provided parameters and return the outcome.
 
 ```llvm
 define i32 @add(i32 %a, i32 %b) {
   %c = add i32 %a, %b
-
   ret i32 %c
 }
 
 define i32 @sub(i32 %a, i32 %b) {
   %c = sub i32 %a, %b
-
   ret i32 %c
 }
 ```
 
-First, let's create an analysis plugin in `lib/Substitution.cpp`. The plugin will loop through basic blocks of the IR code and look for certain patterns/instructions.
+First, let's take a look at the analysis plugin in `lib/Substitution.cpp`. The plugin will loop through basic blocks of the IR code and look for certain patterns/instructions.
 In our case it will be `add` and `sub` instructions. The plugin is going to return a set of instructions that will be later changed by another plugin.
 
 ```cpp
@@ -126,109 +128,50 @@ The function is then called in the `SubstitutionPass::run()` in `lib/Substitutio
 
 ### Compile, load and run
 
-However, before I will explain how obfuscation process can be streamlined with LLVM. I need to make a detour to talk about an interesting way of making the compiled code more
-incomprehensible for the reverse engineers. Control flow flattening breaks up a programs structure into basic blocks - sets of instructions with only one entry and exit point. 
-Then these instructions are taken from different nesting levels and placed next to each other. Take this basic program as an example:
+Now the next step would be to validate the code that we wrote. In the root of the project run:
 
-```c
-int i = 0;
+```bash
+mkdir -p build; \
+ cmake -G Ninja -DLT_LLVM_INSTALL_DIR=$(whereis llvm) -S . -B build/; \
+ ninja -C build -j$(nproc)
+```
 
-while (i < 100) 
-{
-    important_function();
-    i++;
+There should be a file called `build/lib/libSubstitution.so` (or \*.dll, or \*.dylib. Depends on the system that you are using. I wrote this article on/for linux). This is a shared 
+object or a library that will be loaded into LLVM's plugin manager - **opt**
+
+Let's load the pass into the plugin manager and run it on the `examples/start.ll` to see how it works in practice.
+
+```bash
+opt -load-pass-plugin=build/lib/libSubstitution.so \
+ -passes=sub -S examples/start.ll \
+ -o examples/start_transformed.ll
+```
+
+We can see that the `examples/start_transformed.ll` is slightly different from the original `examples/start.ll`
+
+```llvm
+; ModuleID = 'examples/start.ll'
+source_filename = "examples/start.ll"
+
+define i32 @add(i32 %a, i32 %b) {
+  %1 = sub i32 0, %b
+  %2 = sub i32 %a, %1
+  ret i32 %2
+}
+
+define i32 @sub(i32 %a, i32 %b) {
+  %1 = sub i32 0, %b
+  %2 = add i32 %a, %1
+  ret i32 %2
 }
 ```
 
-And this is how it might look like when control flow flattening was applied
+Apart from changed variable names and some comments, the addition and subtraction instructions were replaced with the code that we used in the transformation pass. So it
+works on a simple IR. Neat!
 
-```c
-int i = 0;
-int swFlag = 1; // create a switch flag
+## Effect on static analysis
 
-while (swFlag != 0) 
-{
-    switch (swFlag)
-    {
-        case 1:
-            i = 1;
-
-            swFlag = 2;
-            break;
-        case 2:
-            if (i <= 100)
-                swFlag = 3;
-            else
-                swFlag = 0;
-
-            break;
-        case 3:
-            important_function();
-            i++;
-
-            swVar = 2;
-            break;
-    }
-}
-```
-
-These two pieces of code accomplish the same task! They are however much more different in how they perform it. Therefore the program's structure is going to differ.
-
-// TODO: CHANGE PIC
-
-| ![Control flow flattening](../../assets/img/indepth/control_flow_graph.png) |
-| Control flow flattening |
-
-[This paper](https://www.inf.u-szeged.hu/~akiss/pub/fulltext/laszlo2007obfuscating.pdf) explains control flow flattenning in depth, dealing with  more complex concepts like the
-`try ... catch` and `switch` clauses, as well as proposes an algorithm which  could obfuscate  the binary during the compile time. Since this is a task which can be performed 
-during the compile time, the algorithm needs to be implemented in a compiler. This means that control flow flattening can be well applied to LLVM as a plugin.
-
-### Obfuscating LLVM
-
-After lexing and desugaring the code, the compiler enters the next stage - semantic analysis. This is one of the Rust’s biggest strengths. The code is validated and the borrow 
-checker tracks lifetime of each variable to catch any possible memory leaks. Then the compiler enters the optimisation and code generation stages. Because LLVM is language
-agnostic, it requires the compiler to translate the code into an intermediate representation (IR). This IR is going to be processed by the LLVM, optimised and compiled on
-the selected platform. And the IR is where the obfuscation takes place.
-
-`obfuscation/src/main.rs`
-
-```rust
-fn main() {
-    let arr = vec!["1", "2", "3"];
-
-    for num in arr {
-        println!("{}", num);
-    }
-}
-```
-
-Compiling the program with `cargo build --release` and running the program is going to give us the following output.
-
-```
-$ cargo run --quiet
-1
-2
-3
-```
-
-And the binary from the release build can be found at `obfuscation/target/release/`.
-
-| ![Disassembled binary](../../assets/img/indepth/disas_1.png) |
-| Disassembled binary |
-
-The graph and generated code is very straightforward. Even though the macros expanded to much more code, IR was optimized by LLVM and created a neat executable with very simple 
-code flow.
-
-[LLVM obfuscator]() is a plugin that can be used by `cargo`, the Rust compiler to obfuscate the code flow of the program in the compilation. That way, it is much easier to create
-a unique binary every time it is compiled. Moreover, it makes static analysis much harder since some of the functions are there just to waste time of the researchers.
-
-_TODO: Add pictures of building and disassembly_
-
-To use the plugin I had to build LLVM and the plugin itself, and then create a custom Rust toolchain with the toolchain manager `rustc`. However, as depicted on the picture below
-the effort paid off and a very crude and simple program became something much more complex.
-
-| ![Obfuscated program](../../assets/img/indepth/disas_2.png) |
-| Obfuscated program |
+Let's try it on a real world example and run it on an actual C program that will be compiled with clang.
 
 ```c
 int add(int a, int b) {
@@ -242,9 +185,55 @@ int sub(int a, int b) {
 int main() {
     int a = add(5, 10);
     int b = sub(10, 5);
-
     int c = a - b;
 
     return 0;
 }
 ```
+
+We can transform it to human-readable LLVM IR with the following command.
+
+```bash
+clang -S -emit-llvm examples/hello.c -o examples/hello.ll
+```
+
+The `add` function is transformed into something more complex by the compiler. The majority of the instructions in the following code block allocate the variables on stack
+and then retrieve them to perform the addition. We are mainly interested in the last two lines - assignment to `%7` and the `ret` statement and the `nsw` flag in the `add`
+instruction tells the compiler that the addition might result in an integer overflow.
+
+```llvm
+; Function Attrs: noinline nounwind optnone uwtable
+define dso_local i32 @add(i32 noundef %0, i32 noundef %1) #0 {
+  %3 = alloca i32, align 4
+  %4 = alloca i32, align 4
+  store i32 %0, ptr %3, align 4
+  store i32 %1, ptr %4, align 4
+  %5 = load i32, ptr %3, align 4
+  %6 = load i32, ptr %4, align 4
+  %7 = add nsw i32 %5, %6
+  ret i32 %7
+}
+```
+
+After compiling it with `clang examples/hello.c -o examples/hello` and disassembling it in IDA, we can see the following machine instructions. They seem quite closely
+related to the LLVM's IR.
+
+| ![Original `add` disassembly](../../assets/img/publication/add_disas_og.png) |
+| Original `add` disassembly |
+
+Now, that we have all of the resources prepared, we can run the pass on the IR using the previous command and try to compile it with:
+
+```bash
+clang examples/hello.c -fpass-plugin=build/lib/libSubstitution.so -o examples/hello_transformed
+```
+
+| ![Obfuscated `add` assembly](../../assets/img/publication/add_disas_og.png) |
+| Obfuscated `add` disassembly |
+
+As you can see, the addition instructions were substituted with our custom ones. This means that our plugin successfully ran on the real IR and transformed
+the relevant instructions.
+
+## Conclusion
+
+Obfuscating binaries was always a task that was a pain for the developers since it made the code less readable and maintainable. I hope that with this post you
+can see that the obfuscation process can be moved from the code level to the compilation stage, making the process much more scalable, flexible and extensible.
