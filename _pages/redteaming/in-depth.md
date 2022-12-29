@@ -30,14 +30,14 @@ to structurize my work and validate the quality of my research.
 - **Why would a malware developer choose Rust over C?**
 
     This research questions will require the combination of Library, Workshop and Lab strategies. I will use Library to research what are the most important aspects of
-    language used for malware development. Then, I am going to use that knowledge in the Workshop, to develop the software and validate it in the Lab. The results 
+    language used for malware development. Then, I am going to use that knowledge in the Workshop, to develop the software and validate it in the Lab. The results
     from the Workshop are going to have the biggest impact on the answer of this research question.
 
 - **How does programming in Rust affect static analysis?**
 
     Static analysis is a primary technique for dissecting and analysing malware samples. To research how Rust might change the the reverse engineering process, I will
     need to do some Library research on differences between Rust and C compilation process. Then I will take my findings to test in the Lab and the Workshop by reverse
-    engineering a C program and its Rust counterpart. 
+    engineering a C program and its Rust counterpart.
 
 - **Can the compilation process of the LLVM based compilers be used for malware development purposes?**
 
@@ -104,7 +104,7 @@ variable in the program.
 
 There are two main types of malware analysis: dynamic and static. Dynamic analysis tries to inspect a malware sample by running it (usually in a sandboxed environment). The main
 advantage of this approach is the ability to attach a debugger to the process and to take a closer look at the program during the runtime. The static analysis however relies on
-inspecting and reverse engineering the compiled executable without running it. This process can reveal execution flows and hidden data which would not be accessible during the 
+inspecting and reverse engineering the compiled executable without running it. This process can reveal execution flows and hidden data which would not be accessible during the
 runtime.
 
 Therefore, apart from creating the logic for malware, the developers need to account for the fact that their software will be analysed by security researchers. This is not desired,
@@ -193,7 +193,7 @@ The resulting graph is very huge, and seems too big for the amount of instructio
 ### Compilation process
 
 LLVM is a set of compiler and toolchain technologies that can be used for developing programming languages. The main advantage of using LLVM comes from using it as a front-end
-of the programming language. In essence, this means that LLVM performs code analysis and transforms it into a bytecode which can be compiled by any compiler. In a way, this makes 
+of the programming language. In essence, this means that LLVM performs code analysis and transforms it into a bytecode which can be compiled by any compiler. In a way, this makes
 the Rust compiler platform agnostic.
 
 A compilation process consists of these steps:
@@ -215,7 +215,7 @@ After desugaring and lexing, LLVM produces a `.ll` file, which contains bytecode
 backend. The nature of LLVM allows developers to write passes that will process the IR. This can be leveraged by malware developers to obfuscate the executables. LLVM documentation provides
 a guide on how to write these passes
 
-Therefore I have decided to create a simple pass that will substitute some arithmetic operations of the IR bytecode. This is just a proof of concept to show 
+Therefore I have decided to create a simple pass that will substitute some arithmetic operations of the IR bytecode. This is just a proof of concept to show
 the modularity of LLVM.
 
 ```cpp
@@ -262,3 +262,10 @@ section. Moreover, with `rustc`, a frontend for LLVM, programmers can compile co
 `--target`. This allows building code for platforms that developers don't have access to.
 
 In November of 2021, first samples of the BlackCat
+
+
+### Something more complex
+
+Because this obfuscation pass is a very small change, the compiler would still optimize the code (unless you have a custom clang build). However, more complex
+obfuscation techniques, such as [control flow flattening](http://ac.inf.elte.hu/Vol_030_2009/003.pdf). In essence, this technique breaks down the body of a
+program and putting it into a `switch ... case` statement. Then, using a dispatcher variable, the each block decides on the next set of instructions.

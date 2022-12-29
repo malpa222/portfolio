@@ -50,14 +50,14 @@ a _.lnk_ file which opens a PowerShell script. To ensure stealthy execution of t
 
 - It breaks up command strings, to obfuscate code and evade static analysis. An excerpt from the malware PS script:
 
-```
-	$maraDizo = "Get";
-	$maraDizo += "Current";
-	$maraDizo += "Process";
+```powershell
+$maraDizo = "Get";
+$maraDizo += "Current";
+$maraDizo += "Process";
 
-	# I skipped some code
+# I skipped some code
 
-	$cPr = [System.Diagnostics.Process]::$maraDizo;
+$cPr = [System.Diagnostics.Process]::$maraDizo;
 ```
 
 - BumbleBee proactively checks for a virtual/sandboxed environment and tries to prevent analysis. It was found to have been using

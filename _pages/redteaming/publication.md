@@ -4,10 +4,8 @@ layout: single
 permalink: /redt/publication
 ---
 
-### Pre-requisites
-
 **Disclaimer**: this article does not talk about a lot of boilerplate code/knowledge required to start developing plugins for LLVM system.
-[My repository](https://github.com/malpa222/llvm-obfuscation) is a good start for playing around with the tools. If you want to dive deeper into the infrastructure 
+[My repository](https://github.com/malpa222/llvm-obfuscation) is a good start for playing around with the tools. If you want to dive deeper into the infrastructure
 take a look at resources provided in the references section.
 
 - A clone of [this repository](https://github.com/malpa222/llvm-obfuscation). Keep this repo at hand because I am going to refer to certain files in the article.
@@ -24,8 +22,15 @@ a bit harder to understand while developing. And this is just the top of the ice
 
 ## Optimizing the compilation process
 
-Right now, people have been mostly obfuscating their programs in a _caveman_ style. However, there are tools that could automate and streamline the obfuscation process. 
-Or at least make it much easier for the developers.
+Until recently, people have been mostly obfuscating their programs in a _caveman_ style. They would for example split up command strings into multiple variables, or
+manually try to alter the flow of the program. But that just made the code hard to read, write and maintain, but not necessarily harder to reverse engineer. Take a
+look at PowerShell script from a [BumbleBee malware dropper](https://www.deepinstinct.com/blog/the-dark-side-of-bumblebee-malware-loader):
+
+| ![Manual obfuscation](../../assets/img/publication/caveman.png) |
+| Manual obfuscation |
+
+The language is not the important thing in this example. It's rather the readability and maintainability of the code. Luckily, there are tools that could automate
+and streamline the obfuscation process. Or at least make it much easier for the developers.
 
 Let's take a step aside and look at the traditional compilation process. The compilers usually start with code analysis which looks like this:
 
@@ -89,26 +94,27 @@ For addition, we want `a + b` to look like `a - (-b)`
 
 ```cpp
 // add i32 %a %b
+
 void ReplaceAddInst(BinaryOperator *BO) {
-    // create negation of %b
-    // sub i32 0, %b
-    auto op = BinaryOperator::CreateNeg(
-            BO->getOperand(1),
-            "",
-            BO);
+  // create negation of %b
+  // sub i32 0, %b
+  auto op = BinaryOperator::CreateNeg(
+          BO->getOperand(1),
+          "",
+          BO);
 
-    // create new subtraction instruction
-    // subtracting negated %b from %a
-    auto sub = BinaryOperator::Create(
-            Instruction::Sub,
-            BO->getOperand(0),
-            op,
-            "",
-            BO);
+  // create new subtraction instruction
+  // subtracting negated %b from %a
+  auto sub = BinaryOperator::Create(
+          Instruction::Sub,
+          BO->getOperand(0),
+          op,
+          "",
+          BO);
 
-    // replace the old instruction and remove it
-    BO->replaceAllUsesWith(sub);
-    BO->eraseFromParent();
+  // replace the old instruction and remove it
+  BO->replaceAllUsesWith(sub);
+  BO->eraseFromParent();
 }
 ```
 
@@ -124,18 +130,18 @@ mkdir -p build; \
  ninja -C build -j$(nproc)
 ```
 
-There should be a file called `build/lib/libSubstitution.so` (or \*.dll, or \*.dylib. Depends on the system that you are using. I wrote this article on/for linux). This is a shared 
-object or a library that will be loaded into LLVM's plugin manager - **opt**
+There should be a file called `build/lib/libSubstitution.so` (or \*.dll, or \*.dylib. Depends on the system that you are using.
+I wrote this article on/for linux). This is a shared object or a library that will be loaded into LLVM's plugin manager - **opt**
 
 Let's load the pass into the plugin manager and run it on the `examples/start.ll` to see how it works in practice.
 
 ```bash
 opt -load-pass-plugin=build/lib/libSubstitution.so \
  -passes=sub -S examples/start.ll \
- -o examples/start_transformed.ll
+ -o /tmp/start.ll
 ```
 
-We can see that the `examples/start_transformed.ll` is slightly different from the original `examples/start.ll`
+We can see that `/tmp/start.ll` is slightly different from the original `examples/start.ll`
 
 ```llvm
 ; ModuleID = 'examples/start.ll'
@@ -157,7 +163,7 @@ define i32 @sub(i32 %a, i32 %b) {
 Apart from changed variable names and some comments, the addition and subtraction instructions were replaced with the code that we used in the transformation pass. So it
 works on a simple IR. Neat!
 
-## Effect on static analysis
+## Trying it out with clang
 
 Let's try it on a real world example and run it on an actual C program that will be compiled with clang.
 
@@ -179,18 +185,22 @@ int main() {
 }
 ```
 
-We can transform it to human-readable LLVM IR with the following command.
+We can transform it to human-readable LLVM IR with the following command. Notice the `-Xclang -disable-O0-optnone -O0` arguments. They prevent the compiler from disabling
+optimization on our functions. That's because we are using a pre-compiled binary. In real life, one would rather compile their own instance of clang and
+configure it to their own needs.
 
 ```bash
-clang -S -emit-llvm examples/hello.c -o examples/hello.ll
+clang -Xclang -disable-O0-optnone -O0 \
+ -S -emit-llvm examples/hello.c \
+ -o /tmp/hello.ll
 ```
 
-The `add` function is transformed into something more complex by the compiler. The majority of the instructions in the following code block allocate the variables on stack
-and then retrieve them to perform the addition. We are mainly interested in the last two lines - assignment to `%7` and the `ret` statement and the `nsw` flag in the `add`
-instruction tells the compiler that the addition might result in an integer overflow.
+Because the function is not optimized yet, the `add` function is transformed into something more complex by the compiler. The majority of the instructions in the following
+code block allocate the variables on stack and then retrieve them to perform the addition. We are mainly interested in the last two lines - assignment to `%7` and the `ret`
+statement. The `nsw` flag in the `add` instruction tells the compiler that the addition might result in an integer overflow.
 
 ```llvm
-; Function Attrs: noinline nounwind optnone uwtable
+; Function Attrs: noinline nounwind uwtable
 define dso_local i32 @add(i32 noundef %0, i32 noundef %1) #0 {
   %3 = alloca i32, align 4
   %4 = alloca i32, align 4
@@ -203,25 +213,70 @@ define dso_local i32 @add(i32 noundef %0, i32 noundef %1) #0 {
 }
 ```
 
-After compiling it with `clang examples/hello.c -o examples/hello` and disassembling it in IDA, we can see the following machine instructions. They seem quite closely
-related to the LLVM's IR.
-
-| ![Original `add` disassembly](../../assets/img/publication/add_disas_og.png) |
-| Original `add` disassembly |
-
-Now, that we have all of the resources prepared, we can run the pass on the IR using the previous command and try to compile it with:
+And now, when we run our optimization pass on the `.ll` file, using
 
 ```bash
-clang examples/hello.c -fpass-plugin=build/lib/libSubstitution.so -o examples/hello_transformed
+opt -load-pass-plugin=build/lib/libSubstitution.so \
+ -passes=sub -S examples/hello.ll \
+ -o /tmp/t_hello.ll
 ```
 
-| ![Obfuscated `add` assembly](../../assets/img/publication/add_disas_og.png) |
-| Obfuscated `add` disassembly |
+the IR is going to look like this:
+
+```llvm
+; Function Attrs: noinline nounwind uwtable
+define dso_local i32 @add(i32 noundef %0, i32 noundef %1) #0 {
+  %3 = alloca i32, align 4
+  %4 = alloca i32, align 4
+  store i32 %0, ptr %3, align 4
+  store i32 %1, ptr %4, align 4
+  %5 = load i32, ptr %3, align 4
+  %6 = load i32, ptr %4, align 4
+  %7 = sub i32 0, %6
+  %8 = sub i32 %5, %7
+  ret i32 %8
+}
+```
 
 As you can see, the addition instructions were substituted with our custom ones. This means that our plugin successfully ran on the real IR and transformed
-the relevant instructions.
+the addition operations to a subtraction of the negation of the second operand.
 
-## Conclusion
+## Compilation
 
-Obfuscating binaries was always a task that was a pain for the developers since it made the code less readable and maintainable. I hope that with this post you
-can see that the obfuscation process can be moved from the code level to the compilation stage, making the process much more scalable, flexible and extensible.
+Because this instruction substitution changes the code in a very minor and predictable way, the compiler is going to just optimize our changes. For example,
+this is a disassembly of the `add` function from the C program we transformed earlier:
+
+| ![Disassembly](../../assets/img/publication/add_disas_og.png) |
+| Disassembly |
+
+I used the following commands to compile the IR to machine code instructions. The disassembled `add` function is depicted on the picture:
+
+```bash
+llc -filetype=obj /tmp/t_hello.ll -o /tmp/hello.o; \
+clang /tmp/hello.o -o /tmp/hello
+```
+
+| ![Disassembly of the transformed function](../../assets/img/publication/t_hello_disas.png) |
+| Disassembly of the transformed function |
+
+As you can see, this code:
+
+```nasm
+mov eax, [rbp+var_4] ; move a to eax
+add eax, [rbp+var_8] ; add b to eax
+```
+
+Was optimized by the compiler into one instruction:
+
+```nasm
+lea eax, [rdi+rsi] ; load outcome of a+b into eax
+```
+
+### Possibilities and conclusions
+
+As mentioned earlier, this is just the tip of the iceberg. There are more complex obfuscation that are less predictable than instruction substitution, for example
+control flow flattening. [This paper](http://ac.inf.elte.hu/Vol_030_2009/003.pdf) describes the concept in depth, but in essence - a program is broken down into multiple
+blocks which are then shuffled around to fool the reverse engineer.
+
+Because of the modularity of the LLVM compiler, with few hours of work, developers can create a flexible and testable framework for securing their programs instead of
+resorting to very crude ways of code obfuscation. That would greatly improve the speed of the development and maintainability of the code.
