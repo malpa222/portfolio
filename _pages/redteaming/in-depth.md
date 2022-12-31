@@ -4,12 +4,13 @@ layout: single
 permalink: /redt/in-depth
 ---
 
-This document is a follow-up on the trends research, precisely on the topic of cross-platform malware. Since virtually everybody in the western world owns a smartphone
-or a personal computer, the amount of different platforms that are running on our hardware is bigger than it ever was. This forces malware developers to spend much more
+This document is a follow-up on the trends research, precisely on the topic of cross-platform malware. Since virtually everybody owns a smartphone or a personal
+computer, the amount of different platforms that are running on our hardware is bigger than it ever was. This forces malware developers to spend much more
 time on creating malware for each of these systems.
 
 Nowadays, with the rise of new systems programming languages such as Rust or Go, developing malicious software for different platforms has become more accessible
-and much quicker than it ever was.
+and much quicker than before. I want to investigate why developers would choose cross-platform toolchains and how the technologies could be leveraged for malware
+development purposes.
 
 ## Research questions
 
@@ -18,37 +19,46 @@ along with the sub-questions:
 
 **How can LLVM compiler infrastructure be used to aid malware development?**
 
-- Why would a malware developer choose Rust over C/C++?
-- How does programming in Rust affect static analysis?
-- Why would a malware choose to work with languages using LLVM-based compilers?
+- Why would a malware developer choose an LLVM based language?
+- What contributes to the flexibility and modularity of LLVM?
+- How to develop a plugin for LLVM's optimization pipeline?
+- How to use control flow flattening obfuscation technique with LLVM?
 
 ### Research strategies
 
 In order to answer the sub-questions and produce the conclusion of the research I will combine different research strategies. This approach is going to allow me
-to structurize my work and validate the quality of my research.
+to organize my work and validate the quality of my research.
 
-- **Why would a malware developer choose Rust over C?**
+- **Why would a malware developer choose an LLVM based language?**
 
-    This research questions will require the combination of Library, Workshop and Lab strategies. I will use Library to research what are the most important aspects of
-    language used for malware development. Then, I am going to use that knowledge in the Workshop, to develop the software and validate it in the Lab. The results
-    from the Workshop are going to have the biggest impact on the answer of this research question.
+    I need to find out what are the most commonly used languages for malware development and what are the most important characteristics of such language.
+    Then, I will try to research whether an LLVM-based language might be a good choice. Therefore, the first research question will mainly require using the
+    Library strategy.
 
-- **How does programming in Rust affect static analysis?**
+- **What contributes to the flexibility and modularity of LLVM?**
 
-    Static analysis is a primary technique for dissecting and analysing malware samples. To research how Rust might change the the reverse engineering process, I will
-    need to do some Library research on differences between Rust and C compilation process. Then I will take my findings to test in the Lab and the Workshop by reverse
-    engineering a C program and its Rust counterpart.
+    The LLVM toolchain is a set of compiler technologies that allow developers to create compiler front-ends in a platform-agnostic way. It is used by more
+    and more languages because it removes a lot of effort needed for compiler development. I want to research why Rust is using it and how to develop custom
+    plugins for the framework. To do that, I need to use the Library research to find out how to develop plugins and then Workshop to create initial prototypes.
 
-- **Can the compilation process of the LLVM based compilers be used for malware development purposes?**
+- **How to develop a plugin for LLVM's optimization pipeline?**
 
-    Rust is a very recent case of a programming language built on the LLVM toolchain. However, this is not the only one. Many programming languages are built using the
-    LLVM toolchain. The framework allows for a lot of flexibility and is very modular. Therefore, I want to investigate how it works and how it can be used by the malware
+    Using the input from the previous research question, I want to build on it to find out how LLVM can be used for malware development purposes.
+
+    Rust is a very recent case of a programming language built on the LLVM toolchain. However, this is not the only one. Many programming languages are built
+    on it. The framework allows for a lot of flexibility and is very modular. Therefore, I want to investigate how it works and how it can be used by the malware
     developers.
+
+- **How effective is the flow flattening obfuscation technique?**
+
+    After investigating the compilation process of the LLVM based compilers, I will create a proof of concept software that will put the LLVM's possibilities to
+    the test. The goal is to try and implement the control flow flattening algorithm in the LLVM optimization pipeline to make reverse engineering harder. This
+    will require Library research for learning about the algorithm and then Lab and Workshop for implementing and testing the results.
 
 Having researched all the sub-questions I would be ready to produce the answer to the final question. To do that, I need to use the product of the research in the Lab
 to see if and how does it work and then present it to my peers in the Workshop strategy.
 
-## Why would a malware developer choose Rust over C/C++?
+## Why would a malware developer choose an LLVM based language?
 
 Malware development has always revolved around writing low-level code that interacts closely with a kernel of an OS. Linux kernel is written in C and Windows kernel in
 C++. This means that majority of the malware developed throughout the years has been written in C or C++, since it allows for the best compatibility with native APIs.
@@ -58,66 +68,69 @@ the software was written in languages from the C family, developed directly on W
 | ![Linkers used for compiling malware](../../assets/img/indepth/linkers.png) |
 | Linkers used for compiling malware |
 
-However, as of writing this document, the landscape begins to change. According to _[this article](https://www.zdnet.com/article/linus-torvalds-rust-will-go-into-linux-6-1/)_
-and _[Rust for Linux](https://en.wikipedia.org/wiki/Rust_for_Linux)_ Wikipedia page, a pull request enabling Rust support has been merged into the kernel in October 2022.
-This means that from Kernel v6.1, developers can officialy start writing drivers in Rust. Ultimately, this means that interoperability with C and other system internals
-is going to become much better.
+In November of 2021, first samples of the BlackCat ransomware were noticed by security researchers. BlackCat is a malware family that's written in Rust. The main
+benefit of that language is memory safety, ease of development and most importantly cross-platform compilation. Because the language is built using the LLVM compiler
+toolchain, it is very ease to compile it to a CPU with a different instruction set. This event showed that Rust and LLVM as a choice for malware development are
+starting to gain traction.
 
-But why would a malware developer choose Rust over C? There are couple of the most prominent benefits:
+| ![LLVM Optimization Pipeline](../../assets/img/publication/llvm_pipeline.jpeg) |
+| LLVM Optimization Pipeline |
 
-- **Speed and memory safety**
+LLVM facilitates cross-platform compilation by slightly altering the compilation process. In essence, the code is translated to an abstract assembly language,
+which is then compiled to the specific CPU architecture. This intermediate language allows developers to create plugins that can 'optimize' the intermediate
+representation (IR) to make it run faster for example.
 
-    The Rust project has been started around a decade ago as a part of the Firefox browser. The language operates on lower level as C/C++ but has a different approach
-    to some concepts that C-like languages were historically struggling with. There is no automatic garbage collection; instead, the lifetime of each variable is tracked
-    during the compile-time. This approach can catch more memory corruption bugs during early stages of development.
+Let's look at an unoptimized piece of the intermediate representation. It was generated by the `clang` compiler, and I just made it a bit more readable. The
+code shifts variables around loads them and pops them from the stack, but it could be much simpler. More information on each instruction in
+[IR reference](https://llvm.org/docs/LangRef.html).
 
-    Moreover, Rust can compete with C/C++ in memory and speed benchmarks, while providing access to higher level programming concepts as closures, generics and collections
-    as zero-cost abstractions.
+```llvm
+define @add(i32 %a, i32 %b) {
+    ; allocate 4 bytes on stack for %c and %d
+    %c = alloca i32, align 4
 
-- **Static analysis evasion**
+    ; store %a and %b in %c and %d
+    store i32 %a, ptr %c, align 4
+    store i32 %b, ptr %d, align 4
 
-    As stated before, majority of the malware in existence has been developed using C/C++. This means that for years, security researchers have used and developed software,
-    that helps with analysing C/C++ binaries. However, Rust is not using a traditional compiler, but LLVM - a frontend, which provides a layer of abstraction beetwen the
-    language and the machine. This benefits both regular and malware developers: the code is faster, and can be obfuscated more easily.
+    ; load %a and %b into %e and %f
+    %e = load i32, ptr %3, align 4
+    %f = load i32, ptr %4, align 4
 
-    It is significantly harder to statically analyze a Rust program since the compiler injects memory leakage checks into the binary during the compilation process. Resulting
-    file is slightly bigger beacuse it contains much more machine code. This means that the readability of the executable is low in the first place and obfuscation introduces
-    even more entropy into the file.
+    ; add %e and %f, store in %g
+    %g = add i32 %e, %f
+    ret i32 %g
+}
+```
 
-- **Cross-platform compatibility**
+So we could write a plugin that would optimize the `add` function into a much simpler and elegant version:
 
-    The language was designed to work on _[multiple platforms](https://doc.rust-lang.org/nightly/rustc/platform-support.html)_ without rewriting the whole codebase or going
-    through a complex compiling process (mainly thanks to LLVM). Moreover, Rust has quite good support for embedded devices, and it is possible to compile a program without
-    the whole standard library. That makes the executable much smaller which is always desired by malware developers.
+```llvm
+define i32 @add(i32 %a, i32 %b) {
+  %c = add i32 %a, %b
+  ret i32 %c
+}
+```
 
-### Conclusions
+This shows that 'optimizations' that are very beneficial for malware development could now be in the reach of developers. The plugins are written in C++ -
+a language that majority of malware developers know from inside-out and use very often. One optimization that comes to my mind is automating obfuscation.
+Since the dawn of malware, obfuscation was usually done by hand, making the code very hard to read and maintain. However, this is an important part of
+malware development, since it allows the software to avoid initial Anti-Virus detection, and can delay the progress of reverse engineers trying to analyze
+the executable. Now, with the LLVM plugins, it could be done during the compilation, lifting the burden from the programmer.
 
-Rust has some new approaches to common programming concepts which have been causing problems for many years. Because of that, and its low-level nature it seems like a great fit
-for malware development: zero-cost abstractions for high-level concepts, speed on a C/C++, a compiler catching memory leaks in the development and a lot of freedom and flexibility
-for creating viruses for different systems and devices.
+## What contributes to the flexibility and modularity of LLVM?
 
-This does not come without a cost - the learning curve is very steep in the beginning only to become more gradual after the initial barrier. This makes the first-time development
-a long and cumbersome task. Also, the compile times can be very slow, especially for bigger projects, since the compiler is running a borrow checker which tracks a lifetime of every
-variable in the program.
-
-## How does programming in Rust affect static analysis?
-
-There are two main types of malware analysis: dynamic and static. Dynamic analysis tries to inspect a malware sample by running it (usually in a sandboxed environment). The main
-advantage of this approach is the ability to attach a debugger to the process and to take a closer look at the program during the runtime. The static analysis however relies on
-inspecting and reverse engineering the compiled executable without running it. This process can reveal execution flows and hidden data which would not be accessible during the
-runtime.
-
-Therefore, apart from creating the logic for malware, the developers need to account for the fact that their software will be analysed by security researchers. This is not desired,
-since the less is known about a malware, the higher the chance that it will sneak under AVs and will manage to infect more users. While avoiding dynamic analysis is more or less
-the same in C and in Rust, the biggest differences can be seen in the static analysis part of reverse engineering.
+To find out how to use LLVM for malware development purposes, we need to investigate the design of the framework, certain tools and how it all works
+in a close-up. I want to take a look at the compilation process on an example of a Rust program, since the language is built on the framework and there
+are interesting design choices in the `rustc` compiler.
 
 ### Syntax sugar and macros
 
-Because Rust is a modern language, it tries to make low-level development easier for the programmer. It uses a lot of high-level programming concepts such as anonymous
-functions, iterators, generics etc. Moreover the language has a big support for macros, which make meta-programming a bit easier for the developers. Another big feature of
-the language is the novel approach to memory management. The compiler has a borrow checker - a tool that tracks the lifetime of each variable to ensure that there will be
-no memory leakage in the code. Such amount of high-level and complicated concepts requires a lot of syntax sugar, and hiding the 'guts' of the language away from the
-programmer.
+Because Rust is a modern language, it tries to make low-level development easier for the programmer. It uses a lot of high-level programming concepts
+such as anonymous functions, iterators, generics etc. Moreover the language has a big support for macros, which make meta-programming a bit easier for
+the developers. Another big feature of the language is the novel approach to memory management. The compiler has a borrow checker - a tool that tracks
+the lifetime of each variable to ensure that there will be no memory leakage in the code. Such amount of high-level and complicated concepts requires a
+lot of syntax sugar, and hiding the 'guts' of the language away from the programmer.
 
 Let's take a look at a simple program that iterates over an array and prints its contents:
 
@@ -158,7 +171,7 @@ loop {
 
 It's not important to understand what the code does but rather to notice how many statements were expanded by the compiler during the build process. The for loop is an infinite
 loop that has a hidden conditional flow, and `vec!` and `println!` macros are handy shortcuts that allow the programmers to delegate some work to the compiler instead of
-worrying about the type safety.
+worrying about the type safety. Macros are not a new concept, but they are used _all of the time_ when writing Rust code.
 
 ### Borrow checker and static analysis
 
@@ -183,40 +196,45 @@ fn main() {
 }
 ```
 
-After compiling it with `cargo build --release` and decompiling the resulting binary, IDA presents this graph:
+After compiling it with `cargo build --release` and decompiling the resulting binary in IDA, we can see the following graph
 
 | ![Program disassembly](../../assets/img/indepth/disas_main.png) |
 | Program disassembly |
 
-The resulting graph is very huge, and seems too big for the amount of instructions we wrote in our program. This is mainly due to the borrow checker injecting boiler plate code.
+The resulting graph is very huge, and seems too big for the amount of instructions we wrote in our program. The reason for that is the aforementioned borrow
+checker. While researching how it works, I came to an interesting discovery - the borrow checker does not run _just_ before the code generation
 
 ### Compilation process
 
-LLVM is a set of compiler and toolchain technologies that can be used for developing programming languages. The main advantage of using LLVM comes from using it as a front-end
-of the programming language. In essence, this means that LLVM performs code analysis and transforms it into a bytecode which can be compiled by any compiler. In a way, this makes
-the Rust compiler platform agnostic.
+LLVM is a set of compiler and toolchain technologies that can be used for developing programming languages. The main advantage of using LLVM comes from using it as
+a front-end of the programming language. In essence, this means that LLVM performs code analysis and transforms it into an intermediate assembly which can be compiled
+by any compiler. This makes the _rustc_ compiler platform agnostic.
 
-A compilation process consists of these steps:
+Usually, a compilation process consists of these steps:
 
 1. Lexical analysis
 2. Parsing
 3. Semantic analysis
-4. Optimisation
+4. Optimization
 5. Code generation
 
-Lexical analysis creates so called `tokens` which are then processed by the parser to build abstract syntax tree. At the parsing  stage, the compiler expands macros and de-sugars
-the code. So the following instructions:
+The process is not always linear, but the details are not relevant to this research. The most important part for obfuscation purposes would be the 3rd and the 4th stage.
+The lexical analysis creates so called `tokens` which are then processed by the parser to build abstract syntax tree (AST). Then, during parsing, the macros in the AST
+are expanded, the code is de-sugared and a High-Level Intermediate representation is produced. This is then semantically analyzed by the compiler to try and make sense
+out of what the programmer is trying to do.
+
+After all of this work, the compiler produces a `.ll` file, which contains an abstract assembly language referred to as _Intermediate Representation_ (IR). And this
+file is transformed by different plugins in the LLVM toolchain in the optimization stage. That way the compiler can focus on the meaning of the code and then leave
+the machine-specific optimizations to the framework.
 
 But how all of this relates to the static analysis?
 
 ### Optimization passes
 
-After desugaring and lexing, LLVM produces a `.ll` file, which contains bytecode referred to as _Intermediate Representation_ (IR). This file can be then compiled with any LLVM compatible
-backend. The nature of LLVM allows developers to write passes that will process the IR. This can be leveraged by malware developers to obfuscate the executables. LLVM documentation provides
-a guide on how to write these passes
-
-Therefore I have decided to create a simple pass that will substitute some arithmetic operations of the IR bytecode. This is just a proof of concept to show
-the modularity of LLVM.
+After desugaring and lexing, LLVM produces a `.ll` file, which contains intermediate bitcode referred to as _Intermediate Representation_ (IR). This file can be then
+compiled with any LLVM compatible backend. The nature of LLVM allows developers to write passes (optimization plugins) that will process the IR. This can be leveraged by
+malware developers to obfuscate the executables. LLVM documentation provides a guide on how to write these passes (and my [publication](/redt/publication)).
+Therefore I have decided to create a simple pass that will substitute some arithmetic operations of the IR bitcode.
 
 ```cpp
 // RandomSeed.cpp
@@ -248,24 +266,18 @@ compilation process.
 
 ### Conclusions
 
-LLVM can be used for binary obfuscation in a few different ways. One way is to use LLVM's intermediate representation (IR) to transform the program's code in a way that makes it 
-more difficult to understand. The IR can be used to rename variables and functions, reorder code blocks, or insert additional code that has no effect on the program's behavior. 
-By using LLVM as a common framework for these techniques, it is possible to create complex and effective binary obfuscation strategies.
+LLVM can be used for binary obfuscation in a few different ways. One way is to use LLVM's intermediate representation (IR) to transform the program's code in a way
+that makes it more difficult to understand. The IR can be used to rename variables and functions, reorder code blocks, or insert additional code that has no effect
+on the program's behavior. By using LLVM as a common framework for these techniques, it is possible to create complex and effective binary obfuscation strategies.
 
 And with Rust's native support for LLVM, a team of skilled malware developers can really increase their chances of making their program 'irreversible'
-
-## How does Rust's binary portability relate to modern malware development?
-
-Binary portability is an ability of program to run on different platforms without requiring any modifications. To achieve cross platform portability, the program must be written in a
-language that compiles to platform-agnostic bytecode. Rust uses LLVM for that, which means that the LLVM's IR can be then easily compiled for any platform, as described in the previous
-section. Moreover, with `rustc`, a frontend for LLVM, programmers can compile code for different platforms and/or processor architectures by supplying one additional flag to the command:
-`--target`. This allows building code for platforms that developers don't have access to.
-
-In November of 2021, first samples of the BlackCat
-
 
 ### Something more complex
 
 Because this obfuscation pass is a very small change, the compiler would still optimize the code (unless you have a custom clang build). However, more complex
 obfuscation techniques, such as [control flow flattening](http://ac.inf.elte.hu/Vol_030_2009/003.pdf). In essence, this technique breaks down the body of a
 program and putting it into a `switch ... case` statement. Then, using a dispatcher variable, the each block decides on the next set of instructions.
+
+## How to develop a plugin for LLVM's optimization pipeline?
+
+## How to use control flow flattening obfuscation technique with LLVM?
