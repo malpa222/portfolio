@@ -65,7 +65,7 @@ LLVM compiler toolchain, it is very ease to compile it to a CPU with a different
 development are starting to gain traction.
 
 LLVM facilitates cross-platform compilation by slightly altering the standard compilation process. In essence, the code is translated to an abstract assembly
-language, which is then compiled to the specific CPU architecture. This intermediate language allows developers to create plugins that can 'optimize' the 
+language, which is then compiled to the specific CPU architecture. This intermediate language allows developers to create plugins that can 'optimize' the
 intermediate representation (IR) to make it run faster for example.
 
 | ![[LLVM's three phase design](http://aosabook.org/en/llvm.html)](../../assets/img/indepth/LLVMCompiler1.png) |
@@ -128,7 +128,7 @@ lifting the burden from the programmer.
 
 There are many different obfuscation techniques like encrypting strings, substituting instructions for more complex ones or changing the control flow
 of the program. I want to focus on the latter one, since it can create powerful results with few relatively small amount of work.
-[This research paper](ac.inf.elte.hu/Vol_030_2009/003.pdf) describes the control flow flattening obfuscation technique. In essence, the goal of the
+[This research paper](https://ac.inf.elte.hu/Vol_030_2009/003.pdf) describes the control flow flattening obfuscation technique. In essence, the goal of the
 flattening is to change the flow of the execution of a program so that figuring out what certain parts are doing will become a tedious exercise for
 the reverse engineer.
 
@@ -173,165 +173,170 @@ this could be done automatically. This type of obfuscation makes even a simple c
 software. And with the modularity of the LLVM infrastructure, the required amount of work and the learning curve are relatively low, which is exactly
 what a malware developer is looking for.
 
-## What contributes to the flexibility and modularity of LLVM?
+## How to develop a plugin for LLVM's optimization pipeline?
 
-To find out how to use llvm for malware development purposes, I have to investigate the design of the framework, the tools that it provides and how it
-all works in detail. I started my research on LLVM internals by learning about Rust's compilation process and how the `rustc` compiler uses the
-**borrow checker** to prevent memory leaks. I will use that knowledge to learn more about LLVM's modularity.
+So far, the research has provided the following results - LLVM is a set of modular and interchangeable libraries that can be chained and tailored together
+to achieve a specific goal in the compilation domain of a project. Such goal could be automatically obfuscating executable files produced by the compiler.
+To test how it works and later produce a proof-of-concept, I want to create a simple optimization pass for substituting instructions. Later, with newly
+acquired knowledge, I want to create a more complex pass that will flatten the control flow of a program.
 
-### Syntax sugar and macros
+### Out of tree development
 
-Because Rust is a modern **systems programming** language, it tries to make low-level development easier for the programmer. It uses a lot of high-level
-programming concepts such as lambda functions, iterators, generics etc. Moreover the language has a big support for macros, which makes meta-programming
-a bit easier for the developers. Another big feature of the language is the novel approach to memory management. The compiler has a borrow checker - a tool
-that tracks the lifetime of each variable to ensure that there will be no memory leakage in the code. Such amount of high-level and complicated concepts
-requires a lot of syntax sugar, and hiding the 'guts' of the language away from the programmer. Take the following example:
+To develop **out of tree** in LLVM lingo means to create a library, that does not need to live inside of the directories of the original project, but can
+be developed independently, without being tightly coupled to the LLVM version that we are using. In 2022, it is much easier to do it this way, since the
+development team created a new pass manager that allows for more decoupled pass orchestration. Throughout the next chapters I am going to refer to my
+GitHub repository with the source code containing the obfuscation passes - [malpa222/llvm-obfuscation](https://github.com/malpa222/llvm-obfuscation)
 
-```rust
-let arr = vec![1, 2, 3]; // vec! is a macro that creates a vector
+My repository has three main directories where development happens:
 
-for num in arr {
-    println!("{}", num); // println! is a macro that prints to stdout
-}
-```
+- `include/` - contains header files of the obfuscation passes
+- `lib/` - contains the implementation of the passes
+- `plugin/` - registrations of passes to the plugin manager (PM)
 
-The macros and the for loop are actually a sugar coating for a more elaborate control flow which is expanded during the compile time.
+There are two main type of passes in the LLVM world - analysis and transformation. Because they all operate on the common interface which is the
+intermediate representation, results from the analysis passes can be used by the transformation passes. This is going to be helpful during the later stage
+of the development. For now, I will focus on creating a simple pass that will substitute addition instructions so that `a + b` becomes `a - (-b)`.
+I have split the plugin development into three stages: definition, implementation and registration/build.
 
-```rust
-// expansion of the vec! macro
-let arr = <[_]>::into_vec(#[rustc_box] ::alloc::boxed::Box::new(["1", "2", "3"]));
+#### Definition
 
-// for loop is actually a syntax sugar for
-// an infinite loop based on iterators
-let mut iter = IntoIterator::into_iter(arr);
-loop {
-    match iter.next() { // match the next iterator
-        Some(num) => {
-            {
-                // expansion of the println! macro
-                ::std::io::_print(
-                    ::core::fmt::Arguments::new_v1(
-                        &["", "\n"],
-                        &[::core::fmt::ArgumentV1::new_display(&num)],
-                    ),
-                );
-            };
-        },
-        None => break, // break if 'empty'
-    }
-}
-```
-
-It's not important to understand what the code does but rather to notice how many statements were expanded by the compiler during the build process.
-The for loop is an infinite loop that has a hidden conditional flow, and `vec!` and `println!` macros are handy shortcuts that allow the programmers
-to delegate some work to the compiler instead of worrying about the type safety. Macros are not a new concept, but they are used **all of the time** when
-writing Rust code.
-
-### Borrow checker and the compilation process
-
-The flagship feature of the language is the borrow checker. The borrow checker is embedded in the compiler and it changes the way the developers work with the memory of
-the program. Instead of manually allocating and freeing up the memory for variables, the compilers assigns ownership to them. That way, there are no 'dangling pointers' in
-which can lead to memory leakage or corruption (usually).
-
-This is a complex process that makes the compiler inject a lot of code into the program, to facilitate memory management. This results in a lot of machine generated code
-that makes no sense at first and really inflates even a simple program. Take this implementation of 'FizzBuzz':
-
-```rust
-fn main() {
-    for i in 0..100 {
-        if i % 15 == 0 {
-            println!("fizzbuzz");
-        } else if i % 3 == 0 {
-            println!("fizz");
-        } else if i % 5 ==  0 {
-            println!("buzz");
-        }
-    }
-}
-```
-
-After compiling it with `cargo build --release` and decompiling the resulting binary in IDA, we can see the following graph
-
-| ![Program disassembly](../../assets/img/indepth/disas_main.png) |
-| Program disassembly |
-
-The resulting graph is very huge, and seems too big for the amount of instructions we wrote in our program. The reason for that is the aforementioned borrow
-checker. While researching how it works, I came to an interesting discovery - the borrow checker does not run **just** before the code generation
-
-### Compilation process
-
-LLVM is a set of compiler and toolchain technologies that can be used for developing programming languages. The main advantage of using LLVM comes from using it as
-a front-end of the programming language. In essence, this means that LLVM performs code analysis and transforms it into an intermediate assembly which can be compiled
-by any compiler. This makes the **rustc** compiler platform agnostic.
-
-Usually, a compilation process consists of these steps:
-
-1. Lexical analysis
-2. Parsing
-3. Semantic analysis
-4. Optimization
-5. Code generation
-
-The process is not always linear, but the details are not relevant to this research. The most important part for obfuscation purposes would be the 3rd and the 4th stage.
-The lexical analysis creates so called `tokens` which are then processed by the parser to build abstract syntax tree (AST). Then, during parsing, the macros in the AST
-are expanded, the code is de-sugared and a High-Level Intermediate representation is produced. This is then semantically analyzed by the compiler to try and make sense
-out of what the programmer is trying to do.
-
-After all of this work, the compiler produces a `.ll` file, which contains an abstract assembly language referred to as _Intermediate Representation** (IR). And this
-file is transformed by different plugins in the LLVM toolchain in the optimization stage. That way the compiler can focus on the meaning of the code and then leave
-the machine-specific optimizations to the framework.
-
-But how all of this relates to the static analysis?
-
-### Optimization passes
-
-After desugaring and lexing, LLVM produces a `.ll` file, which contains intermediate bitcode referred to as **Intermediate Representation** (IR). This file can be then
-compiled with any LLVM compatible backend. The nature of LLVM allows developers to write passes (optimization plugins) that will process the IR. This can be leveraged by
-malware developers to obfuscate the executables. LLVM documentation provides a guide on how to write these passes (and my [publication](/redt/publication)).
-Therefore I have decided to create a simple pass that will substitute some arithmetic operations of the IR bitcode.
+First, I have defined the components that will make up the plugin. Since I wanted to substitute only the addition operations, I have decided to create two
+passes: `SubstitutionAnalysis` and `SubstitutionPass`, where the first one will supply the addition operations to the latter.
 
 ```cpp
-// RandomSeed.cpp
+#include "llvm/IR/InstrTypes.h"
+#include "llvm/IR/PassManager.h"
 
-#include "llvm/Pass.h"
-#include "llvm/IR/Function.h"
-#include "llvm/Support/raw_ostream.h"
-
-using namespace llvm;
-
-namespace {
-    struct Substitution : public FunctionPass {
-        static char ID;
-        Substitution() : FunctionPass(ID) {}
-
-        bool runOnFunction(Function &F) override {
-            return false;
-        }
+namespace substitution {
+    struct SubstitutionPass : public llvm::PassInfoMixin<SubstitutionPass> {
+        static llvm::PreservedAnalyses run(
+            llvm::Function &F,
+            llvm::FunctionAnalysisManager &FAM);
     };
-}
 
-char Substitution::ID = 0;
+    struct SubstitutionAnalysis : public llvm::AnalysisInfoMixin<SubstitutionAnalysis> {
+        using Result = llvm::SmallVector<llvm::BinaryOperator *, 0>;
+        Result run(
+            llvm::Function &F,
+            llvm::FunctionAnalysisManager &FAM);
 
-static RegisterPass<Substitution> X("Substitution", "Instruction substitution");
+        static llvm::AnalysisKey Key;
+    };
+} // namespace substitution
 ```
 
-LLVM works with C just as good as with Rust, so the plugin can be applied to both languages. This shows how easy it might be to add an obfuscation step to the
-compilation process.
+Notice how both passes are accepting the same parameters in the `run` function. That way, `SubstitutionPass` is able to get the results of the
+`SubstitutionAnalysis` from the `FunctionAnalysisManager`.
 
-### Conclusions
+#### Implementation
 
-LLVM can be used for binary obfuscation in a few different ways. One way is to use LLVM's intermediate representation (IR) to transform the program's code in a way
-that makes it more difficult to understand. The IR can be used to rename variables and functions, reorder code blocks, or insert additional code that has no effect
-on the program's behavior. By using LLVM as a common framework for these techniques, it is possible to create complex and effective binary obfuscation strategies.
+With the structs defined, I have proceeded to implement them in `lib/SubstitutionPass.cpp`. First I created the analysis pass, that will return
+the addition instructions in the basic blocks of the IR code.
 
-And with Rust's native support for LLVM, a team of skilled malware developers can really increase their chances of making their program 'irreversible'
+```cpp
+SubstitutionAnalysis::Result SubstitutionAnalysis::run(
+    Function &F,
+    FunctionAnalysisManager &FAM) {
+    SmallVector<BinaryOperator*, 0> Insts; // initialize the instructions vector
 
-### Something more complex
+    for (inst_iterator I = inst_begin(F), E = inst_end(F); I != E; I++) {
+        // checks if I is addition of the same types
+        // e.g. int + int
+        if (!I->isBinaryOp())
+            continue;
 
-Because this obfuscation pass is a very small change, the compiler would still optimize the code (unless you have a custom clang build). However, more complex
-obfuscation techniques, such as [control flow flattening](http://ac.inf.elte.hu/Vol_030_2009/003.pdf). In essence, this technique breaks down the body of a
-program and putting it into a `switch ... case` statement. Then, using a dispatcher variable, the each block decides on the next set of instructions.
+        if (I->getOpcode() == Instruction::Add)
+            Insts.push_back(cast<BinaryOperator>(&*I));
+    }
 
-## How to develop a plugin for LLVM's optimization pipeline?
+    return Insts;
+}
+```
+
+As you can see, the pass checks if the `opcode` of the instruction is addition and then appends it to the `Insts` vector. Then, the result is
+consumed by the transformation pass as follows.
+
+```cpp
+PreservedAnalyses SubstitutionPass::run(Function &F, FunctionAnalysisManager &FAM) {
+    auto &AddInsts = FAM.getResult<SubstitutionAnalysis>(F);
+
+    for (auto BO: AddInsts) {
+        // first negate the second operator: b -> -b
+        // the last parameter tells the function to insert
+        // the instruction before the BO
+        auto op = BinaryOperator::CreateNeg(
+                BO->getOperand(1),
+                "",
+                BO);
+
+        // then, create a substitution operation
+        auto sub = BinaryOperator::Create(
+                Instruction::Sub,
+                BO->getOperand(0),
+                op,
+                "",
+                BO); // insert before BO
+
+        // replace the old instruction with the new one
+        BO->replaceAllUsesWith(sub);
+        BO->eraseFromParent();
+    }
+
+    auto PA = PreservedAnalyses::all();
+    PA.abandon<SubstitutionAnalysis>();
+
+    return PA;
+}
+```
+
+Walking through the code, first a negation of the second addition operator is created, so `b` becomes `-b`. Then, a new subtraction instruction
+takes the `-b` and subtracts it from `a` so the result looks like this: `a - (-b)`.
+
+#### Registration/build
+
+However, before we can even verify if our pass is working we have to register it with the plugin manager. Because it is almost purely boilerplate
+code, I am not going to include it here. The registration happens in `plugin/SubstitutionPlugin.cpp`.
+
+After the registration, the library is built with the following commands:
+
+```bash
+mkdir -p build; \
+ cmake -G Ninja -DLT_LLVM_INSTALL_DIR=$(whereis llvm) -S . -B build/; \
+ ninja -C build -j$(nproc)
+```
+
+After building, the pass can be tested on an example IR located in `examples/start.ll`
+
+```llvm
+define i32 @add(i32 %a, i32 %b) {
+  %c = add i32 %a, %b
+  ret i32 %c
+}
+```
+
+The pass needs to be run using the LLVM's pass manager, **opt**
+
+```bash
+opt -load-pass-plugin=build/lib/libSubstitution.so \
+ -passes=sub -S examples/start.ll \
+ -o /tmp/t_start.ll
+```
+
+And the following output is produced:
+
+```llvm
+; ModuleID = 'examples/start.ll'
+source_filename = "examples/start.ll"
+
+define i32 @add(i32 %a, i32 %b) {
+  %1 = sub i32 0, %b
+  %2 = sub i32 %a, %1
+  ret i32 %2
+}
+```
+
+As you can see, the pass manager inserted some metadata into the file and changed the instructions to the ones that we have defined. Moreover, it
+there is no %c variable anymore, but %1 and %2 which were supplied by the pass. I decided that it needs to be put to test in a real life example,
+so I have ran the obfuscation code on a program with the help of `clang` compiler. It is a flagship product of LLVM and it can compile **C/C++**.
 
 ## How to use control flow flattening obfuscation technique with LLVM?
