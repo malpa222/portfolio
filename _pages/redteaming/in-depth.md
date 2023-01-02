@@ -20,7 +20,7 @@ following question, along with the sub-questions:
 **How can LLVM compiler infrastructure be used to aid malware development?**
 
 - Why would a malware developer choose an LLVM based language?
-- How to develop a plugin for LLVM's optimization pipeline?
+- Are plugin development results worth the time spent learning the LLVM infrastructure?
 - How to use control flow flattening obfuscation technique with LLVM?
 
 ### Research strategies
@@ -34,11 +34,11 @@ to organize my work and validate the quality of my research.
     Then, I will try to research whether an LLVM-based language might be a good choice. Therefore, the first research question will mainly require using the
     Library strategy.
 
-- **How to develop a plugin for LLVM's optimization pipeline?**
+- **Are plugin development results worth the time spent learning the LLVM infrastructure?**
 
     Using the input from the previous research question, I want to build on it to find out how to create my own plugin that will aid malware development,
     especially the obfuscation part. To find an answer I will need to rely on the Workshop research strategy to develop the addon and try to connect it
-    to the rest of the framework.
+    to the rest of the framework. This will give me an overview of the learning curve and the value of the knowledge.
 
 - **How effective is the flow flattening obfuscation technique?**
 
@@ -117,7 +117,11 @@ it's up to the programmer to link them in preferred order.
 In the picture, the `PassB.o` is referencing `PassD.o` while `PassC.o` is left out, because it was not registered in this optimization pipeline. This design
 is very modular and is using a common interface for optimizing the code - intermediate representation. That way, developers can create independent parts
 *out of tree*, meaning that they can create small modules which can be included without drastically changing the pipeline or without the need to learn the
-whole infrastructure to accomplish a simple task.
+whole infrastructure to accomplish a simple task. Moreover, the modularity of LLVM increases the chances that old plugins are still going to be compatible
+with newer versions of the infrastructure. 
+
+In essence, LLVM can be used in various ways and there is high chance that it will satisfy the needs of majority
+of malware developers. If that is not the case, the modular design allows the programmers to implement their own extensions.
 
 ### Obfuscation as optimization
 
@@ -336,7 +340,29 @@ define i32 @add(i32 %a, i32 %b) {
 ```
 
 As you can see, the pass manager inserted some metadata into the file and changed the instructions to the ones that we have defined. Moreover, it
-there is no %c variable anymore, but %1 and %2 which were supplied by the pass. I decided that it needs to be put to test in a real life example,
-so I have ran the obfuscation code on a program with the help of `clang` compiler. It is a flagship product of LLVM and it can compile **C/C++**.
+there is no `%c` variable anymore, but `%1` and `%2` which were supplied by the pass.
+
+### Conclusions on the development process
+
+This pass was developed using the new pass manager - `opt`. In 2022 the LLVM project is trying to deprecate the old manager in favor of the new one.
+The main benefit of such change is the fact that passes can be developed in the **out of tree** manner.
+
+After reading the [official walkthrough - Writing an LLVM Pass](https://www.llvm.org/docs/WritingAnLLVMNewPMPass.html), I followed the steps and
+started the development **in tree**, as the guide says. My computer was struggling with building the whole
+[llvm-project](https://github.com/llvm/llvm-project), which was just the tip of the iceberg. Just setting up the pass and registering it in the
+pass manager was cumbersome, as I had to manually browse through different `CMakeLists.txt` with hundreds of lines and registering the pass there.
+My IDE (I'm using JetBrains CLion) was struggling with loading due to the sheer amount of different files in the project, even after focusing on
+the passes directory `lib/Transformation`. Then rebuilding the project each time took a significant amount of time because, again, of the amount
+of different files. Since I am not well accustomed to big C++ projects I had to spend a lot of time researching how to develop the pass in a
+more efficient manner. Eventually after using these resources I was able to come up with a way how to easily create an **out of tree** setup
+for my pass development:
+
+- [Introduction to the Low Level Virtual Machine (LLVM)](https://www.youtube.com/playlist?list=PLDSTpI7ZVmVnvqtebWnnI8YeB8bJoGOyv)
+- [2019 LLVM Developers’ Meeting: A. Warzynski “Writing an LLVM Pass: 101”](https://www.youtube.com/watch?v=ar7cJl2aBuU)
+
+All in all, it might be a bit tricky to wrap one's head around the amount of new concepts and jargon that was introduced in this chapter. However,
+if a developer is willing to get over the initial steepness of the learning curve, they can quickly start building using the newly acquired knowledge.
+After all, the rest of the obfuscation is pure programming, and since majority of malware developers are apt in C-like languages, they can utilize
+the whole infrastructure to satisfy their needs.
 
 ## How to use control flow flattening obfuscation technique with LLVM?
