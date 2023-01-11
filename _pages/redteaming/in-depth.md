@@ -21,7 +21,7 @@ following question, along with the sub-questions:
 
 - Why would a malware developer choose an LLVM based language?
 - Are plugin development results worth the time spent learning the LLVM infrastructure?
-- How to use control flow flattening obfuscation technique with LLVM?
+- How effective is the control flow flattening obfuscation?
 
 ### Research strategies
 
@@ -40,7 +40,7 @@ to organize my work and validate the quality of my research.
     especially the obfuscation part. To find an answer I will need to rely on the Workshop research strategy to develop the addon and try to connect it
     to the rest of the framework. This will give me an overview of the learning curve and the value of the knowledge.
 
-- **How effective is the flow flattening obfuscation technique?**
+- **How effective is the control flow flattening obfuscation?**
 
     After investigating the compilation process of the LLVM based compilers, I will create a proof of concept software that will put the LLVM's possibilities
     to the test. The goal is to try and implement the control flow flattening algorithm in the LLVM optimization pipeline to make reverse engineering harder.
@@ -366,3 +366,241 @@ After all, the rest of the obfuscation is pure programming, and since majority o
 the whole infrastructure to satisfy their needs.
 
 ## How to use control flow flattening obfuscation technique with LLVM?
+
+So far, I have only looked at the infrastructure of the LLVM project and its capabilities. However, this research started with the goal of investigating
+the domain through the prism of malware development. All of my previous findings led me to the conclusions on what can be done with the framework, but
+now I need to put it to the practical test and develop a proof-of-concept obfuscation plugin. I want to test the usefulness of the system using the
+control flow flattening technique.
+
+## The flattening algorithm
+
+Before the implementation, I want to focus on the obfuscation algorithm itself. As described in
+[Obfuscating C++ Programs via Control Flow Flattening](https://ac.inf.elte.hu/vol_030_2009/003.pdf) it is built on the principle of reordering the basic
+blocks of the executable so that it is harder to reverse engineer the resulting executable.
+
+The algorithm can be broken down into the following steps:
+
+1. Create a `dispatcher` variable
+2. Create a `while` loop with condition `dispatcher < num_blocks`
+3. Add a `switch...case` on `dispatcher` and put each basic block into a case
+4. Increment the `dispatcher` after every iteration
+
+### Control flow
+
+A basic block is a set of instructions that is ended by a terminator instruction. A terminator is an instruction that changes the control flow of the
+program. For example, it can be a return or jump statement. The basic blocks are connected with each other and that creates a `control flow`. If we take
+an `if...else` statement, each clause will create a basic block which will end with a jump instruction that contributes to the control flow of the program.
+
+```c
+int a = 5;
+
+if (a == 10)
+    return a - 10;
+else
+    return a;
+```
+
+Which is going to be translated to:
+
+```llvm
+define dso_local i32 @main() #0 {
+    ; this is the entryBlock, but its not labeled by the compiler
+    ; omitting some code ...
+    %comp_a = load i32, ptr %a, align 4
+    %isEqual = icmp eq i32 %comp_a, 10 ; compare %a to 10 and save the result
+    br i1 %isEqual, label %ifBlock, label %elseBlock ; go to isEqual if true
+
+ifBlock:                                                ; preds = %entryBlock
+    ; omitting some code ...
+    br label %return
+
+elseBlock:                                              ; preds = %entryBlock
+    ; omitting some code ...
+    br label %returnBlock
+
+returnBlock:                                            ; preds = %ifBlock, %elseBlock
+  %retVal = load i32, ptr %a, align 4
+  ret i32 %retVal
+}
+```
+
+`entryBlock`, `ifBlock`, `elseBlock` and `returnBlock` are all basic blocks. Their predecessors are mentioned on the right, which gives a rough picture of how the
+control flow is being handled in the function and program. So, the control flow goes like that:
+
+```
+entryBlock -> ifBlock -> elseBlock -> returnBlock
+```
+
+This control flow is the subject of the obfuscation pass. The goal is to make a lot of jumps back and forth so that the reverse engineer will have harder time
+statically analyzing even a simpler binary.
+
+### Implementing the pass
+
+*For detailed implementation of each block check [`lib/Flattening.cpp`](https://github.com/malpa222/llvm-obfuscation/blob/main/lib/Flattening.cpp). Here are the most important parts.*
+
+To reiterate: the obfuscation is achieved by taking each basic block of the program and placing it into its own case in a `switch` statement. That way, the control
+flow is not linear, but goes back and forth in the disassembled binary. The implementation starts with creating a pointer to a `dispatcher` variable and allocating
+0 on stack. Then, a main loop is added.
+
+```cpp
+auto *dispatcherPtr = new AllocaInst(Type::getInt32Ty(F.getContext()), 0, "dispatcherPtr", first);
+auto store = new StoreInst(ConstantInt::get(Type::getInt32Ty(F.getContext()), 0),dispatcherPtr, first);
+
+BasicBlock *loopStart = BasicBlock::Create(F.getContext(), "loopStart", &F, first);
+BasicBlock *loopEnd = BasicBlock::Create(F.getContext(), "loopEnd", &F, first);
+BranchInst::Create(loopStart, loopEnd); // jump to loopEnd from the loopStart
+
+BranchInst::Create(loopStart, first); // jump to loopStart from the first block
+first->moveBefore(loopStart);
+```
+
+After that, the `switch...case` statement is added to the program. After each block is added as a case, to improve performance of the program, the dispatcher
+variable is updated directly through the pointer instead of loading, incrementing, and storing the value again. Since each basic block might have only one or
+two successors, the dispatcher variable is updated accordingly.
+
+```cpp
+for (BasicBlock *block : blocks) {
+    if (block->getTerminator()->getNumSuccessors() == 1) { // regular block
+        // omitting some code...
+        block->getTerminator()->eraseFromParent();
+        new StoreInst(nextCase, store->getPointerOperand(), block);
+        BranchInst::Create(loopEnd, block);
+    } else if (block->getTerminator()->getNumSuccessors() == 2) { // conditional jump
+        // omitting some code...
+
+        // Create a conditional select instruction
+        // that will assign a value based on a condition
+        auto *br = cast<BranchInst>(block->getTerminator());
+        SelectInst *sel = SelectInst::Create(
+                br->getCondition(),
+                nextTrue,
+                nextFalse,
+                "",
+                block->getTerminator());
+
+        block->getTerminator()->eraseFromParent();
+        new StoreInst(sel, store->getPointerOperand(), block);
+        BranchInst::Create(loopEnd, block);
+    }
+}
+```
+
+This piece of code is the most important part of the implementation as it defines the control flow of the program and orders how the blocks of the
+switch case should be connected to each other. This changes the initial control flow into this:
+
+```
+first -> loopStart -> switchBlock -> [case n] -> swDefault -> loopEnd -> last
+            ^                                                    |
+            |__________[until the default condition]_____________|
+```
+
+### Effectiveness of the pass
+
+After the implementation of the flattening plugin, it is time to test it on a a real program. The following piece of code takes a random integer and
+then performs some checks and returns 0.
+
+```c
+#include "stdio.h"
+#include "stdlib.h"
+
+int main() {
+    time_t t;
+    srand((unsigned) time(&t));
+
+    int n = rand();
+    printf("n = %d\n", n);
+
+    if (n < 10)
+        printf("n is smaller than 10\n");
+    else if (n == 10)
+        printf("n is equal to 10\n");
+    else
+        printf("n is bigger than 10\n");
+
+    return 0;
+}
+```
+
+Just at the first glance we can say that the program is going to have four basic blocks: `if (n < 10)`, `else if (n == 10)`, `else` and `return`.
+Let's confirm it by disassembling the program.
+
+*The generated IR can be examined here: [`examples/flattening.ll`](https://github.com/malpa222/llvm-obfuscation/blob/main/examples/flattening.ll)*
+
+| ![Disassembly of the original program](../../assets/img/indepth/fin_original.png) |
+| Disassembly of the original program |
+
+As depicted, the program has three basic blocks for each `if` case and one for the `return` statement. The flow between the blocks is quite straightforward
+and the visual branching shows that the flow is conditional. However, if the IR is going to be transformed by the flattening algorithm, it is going to
+produce the following results.
+
+*The transformed IR can be examined here: [`flattening_transformed.ll`](../../assets/code/flattening_transformed.ll)*
+
+Each basic block has been put into the switch statement, and its terminator was changed to jump back to the end of the loop, so that the control flow cannot
+be visually traced.
+
+```llvm
+loopStart:                                        ; preds = %0, %loopEnd
+  br label %switch
+
+switch:                                           ; preds = %loopStart
+  %dispatcher = load i32, ptr %dispatcherPtr, align 4
+  switch i32 %dispatcher, label %switchDefault [
+    i32 0, label %20
+    i32 1, label %16
+    i32 2, label %14
+    i32 3, label %12
+    i32 4, label %11
+    i32 5, label %10
+  ]
+
+10:                                               ; preds = %switch
+  ret i32 0
+
+11:                                               ; preds = %switch
+  store i32 5, ptr %dispatcherPtr, align 4
+  br label %loopEnd
+
+12:                                               ; preds = %switch
+  %13 = call i32 (ptr, ...) @printf(ptr noundef @.str.3)
+  store i32 4, ptr %dispatcherPtr, align 4
+  br label %loopEnd
+```
+
+This command is used to compile the intermediate representation to an object file and then linked with the clang compiler.
+
+```bash
+llc -filetype=obj flattening_transformed.ll -o /tmp/flattening.o; \
+clang /tmp/flattening.o -o /tmp/flattening
+```
+
+| ![Flattened control flow](../../assets/img/indepth/fin_flattened.png) |
+| Flattened control flow |
+
+As depicted on the image, the basic blocks of the program were put in a `switch` statement making the control flow irreversible
+visually. Even such a simple program as this one could be obfuscated into something tricky to grasp at first. In case of more
+complicated software, the technique might be even more effective, as there will be a lot of conditions and jumps to other basic
+blocks.
+
+## Conclusions
+
+For summing up the research, I want to again go through each research questions and reflect on the outcome. First, the research
+has established that LLVM has very modular design thanks to its structure being based on set of libraries instead of being a
+monolith framework (like GCC). This definitely reduces the learning curve height which allows developers for quick and easy changes
+implemented in an out-of-tree way.
+
+Then, the research started focusing on a plugin development. I have investigated how does LLVM work and when and why are the passes used.
+With that, I have implemented a very simple pass to verify whether the plugin development can indeed help the malware developers with
+tailoring the compiler to their needs.
+
+After learning how to develop an LLVM pass, I have decided to perform an obfuscation exercise and created a proof-of-concept plugin
+that implements a control flow flattening algorithm to make the program much more difficult to reverse engineer. The code can be examined
+on my GitHub profile in [llvm-obfuscation](https://github.com/malpa222/llvm-obfuscation).
+
+### Summing up
+
+All in all, I believe that this can be a very interesting product for both malware developers and reverse engineers/AV software developers.
+The tool makes the obfuscation much easier and maintainable than it ever was before, and it can be used with pre-built LLVM executables,
+so you don't need to build anything from scratch.
+
+Personally, I think this has taught me a lot about the reverse engineer's mindset. Now I know what the static analysis is going to look for
+in a program and how that can be hidden from plain sight be just reshuffling the order of basic blocks of the program.
