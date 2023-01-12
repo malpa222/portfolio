@@ -5,6 +5,16 @@ docs:
         url: "/"
       - title: Backlog
         url: "sprints"
+      - title: Personal project
+        url: "personal"
+  - title: Portfolio
+    children:
+      - title: LO1 - Security specialist
+        url: "portfolio/lo1"
+      - title: LO2 - Researcher and developer
+        url: "portfolio/lo2"
+      - title: LO3 - Security professional
+        url: "portfolio/lo3"
   - title: Red teaming
     children:
       - title: Trends research
@@ -15,10 +25,6 @@ docs:
         url: "redt/publication"
       - title: Hands-on experience
         url: "redt/handson"
-  - title: Personal project
-    children:
-      - title: Project plan
-        url: "personal/plan"
   - title: Group project
     children:
       - title: IT-Workz project description
