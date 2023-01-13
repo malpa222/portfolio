@@ -55,7 +55,7 @@ tooling), social engineering abilities (for hacking employees) and penetration t
 
 ### Phishing at Hoefnagels
 
-### Exploit techniques
+### Exploitation techniques
 
 ## Professional application
 

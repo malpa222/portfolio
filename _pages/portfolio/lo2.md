@@ -44,22 +44,61 @@ You can find more about the research questions in my
 
 ### Organizing research and development
 
-[comment]: # - What research strategies and methods did you use to work on the sub-questions?
-[comment]: # - What development methods did you use and how? For example, what aspects of Scrum
-[comment]: # did you use and how did you do that? What was new, different, compared to previous projects?
+Majority of the research questions were based on the Library research with focus on the Literature study. However, the questions
+that used the input from the Hoefnagels pentest, had to use the Field research alongside with the Literature. All of the goals
+of the project were validated with our peers and teachers using the Showroom strategy in meetings, presentations and in demos.
+
+Apart from the DOT Research Framework, we have used the Unified Kill Chain and Mitre ATT&CK methodologies for choosing the best
+techniques and applying them to relevant phases of the penetration test. Furthermore, with the help of the CIA Matrix, we were
+able to conduct a risk analysis at Hoefnagels.
+
+Compared to the previous cybersecurity project I did, this time we have took more research oriented approach and based our plan on
+reaching the goal that clients wanted. Last time, our project was mainly focusing on performing a pentest, and proposing a secure
+solution but the we did not pay as much attention to the outcome as to the process.
 
 ### My activities
 
-[comment]: # - What roles and responsibilities did you have in the project? Why?
-[comment]: # - What project activities where you involved in and what results have you produced?
-[comment]: # Give a list of activities, with links to your results. Indicate what parts are yours if you have
-[comment]: # worked in pairs or sub-teams.
+In the group I took the role of the Scrum master. I was responsible for overseeing the issue management in our team and tracking our
+performance from sprint to sprint. After creating the research questions, we put them in Jira tickets and assigned them to epics that
+grouped the similar sub-questions or tasks.
+
+| ![Group project backlog](../../assets/img/lo/group_backlog.png) |
+| Group project backlog |
+
+Apart from project management, during the research and development I was focusing on the social engineering techniques and explaining
+different types of pentests.
+
+- Social Engineering
+
+    Together with Georgi Minchev, we have conducted a phishing campaign on Hoefnagels employees. We have aimed to test employees
+    awareness rather than ourt ability to breach through the security measures. Then, I have described the requirements for such
+    tests in both technical and management level guidelines. You can find my writeup in the
+    [Hoefnagels Social Engineering section](https://malpa222.github.io/portfolio/group/hoefnagels).
+
+- Penetration test types
+
+    In our deliverables for IT-Workz, each of us was tasked with writing a set of guidelines about a chosen aspect of penetration
+    testing. I decided to write about the different approaches to pentests: white, black and gray box. The goal was to explain
+    what kind of knowledge, resources and approach is required so that both technical and management staff can efficiently propose
+    the approach to a client.
 
 ## Reflections and evaluation
 
-[comment]: # - Evaluation and reflection
-[comment]: # - What were the highlights for you in your project?
-[comment]: # - What challenges did you face, what did you do to overcome them?
-[comment]: # - Critical evaluation: What was less successful, what could or should you have done differently
-[comment]: # - Looking ahead: How is this valuable for your professional future? How are you now a
-[comment]: # better researcher and developer?
+Throughout the project our group was involved in a lot of different activities. I worked on the phishing attacks and my teammates
+were conducting physical intrusion activities or the wireless attacks. I am however very satisfied with my tasks since I got a
+chance to learn about social engineering and gain hands-on experience. This knowledge is very valuable, because there is almost
+no controlled environment for learning social engineering in practice without testing it on actual people, which is unethical.
+
+For me, the biggest challenges in the project were organizational and technical. First of all, communication with IT-Workz was
+very cumbersome. Even though our team stayed proactive all the time, the company was very slow to respond, which significantly
+hindered our progress, making it impossible to conduct more than one pentest. However, we kept the teachers up to date with the
+progress of the project. Another big challenge was technical - phishing is very hard in modern internet. First, our phishing
+website was flagged by (possibly Google's) web crawlers and flagged, so we had to start from the beginning. Then, setting up
+the DNS forwarding and mail servers was also hard, since we didn't have enough time to make our mailing service authentic.
+More details can be found in the [Hoefnagels phishing writeup](https://malpa222.github.io/portfolio/group/hoefnagels)
+
+Looking back at the project, I can say that we could have definitely improved how we split the tasks among each other. While
+I got pretty good tasks, I think that the size of our group was inadequate to the tasks that we created. For example, during
+a pentest, it seemed that there were too many people trying to exploit the Hoefnagels infrastructure, which made the work a
+bit chaotic. Nevertheless, I can take out an important lesson out of it - more people does not always mean that the work will
+be faster. It will definetely help me in my professional career where I will have to work with other people.
