@@ -5,11 +5,15 @@ title: Personal project
 
 ## Project plan
 
-The personal project in this specialization is not strictly tied to our personal track. Therefore, I have decided to put my efforts into learning the Go
-programming language by researching the BitTorrent protocol.
+The personal project in this specialization is not strictly tied to our personal track. Therefore, I have decided to explore the peer-to-peer file
+sharing network created by the BitTorrent protocol. I have always found torrents interesting, and I believe it is a good exercise for this semester
+to look at file sharing from a security perspective. Since BitTorrent was initially created in 2001, a lot of things in the world of computer
+security have changed. The protocol's  security has remained fairly the same throughout the years, so I want to explore what and how could be
+changed in the specification.
 
-Go is becoming an increasingly popular choice for backends and cloud environments. Developed at Google in 2007, Go was aimed to solve some engineering
-problems that the company was facing back then. Since its inception, the language has proven to be fast, maintainable and easily scalable.
+I want to use the Go programming language for developing a couple of proof-of-concepts for the project. The language is becoming more and more popular
+in the industry, because of it's small learning curve, automatic garbage collection and speed. Therefore, I will try to use Go in different use cases to
+discover the potential of the language.
 
 ### Research questions
 
@@ -40,7 +44,7 @@ strategies from the DOT framework.
 
   This question tries to analyze the de-facto standard of peer discovery: distributed hash tables. The hash tables can be used for trackerless peer discovery, making 
   the network completely decentralized, but they also introduce some threats for the DHT nodes. I will try to answer this question by analysing the need for DHTs using 
-  the Library research strategy. Then, I will combine the Lab and Workshop strategies to try and exploit the vulnerability.
+  the Library research strategy. Then, I will combine the Lab and Workshop strategies to try and come up with proposals to fix the vulnerabilities.
 
 - **How to address the lack of encryption in the protocol?**
 
@@ -85,4 +89,23 @@ for almost completely decentralized file sharing network.
 
 The main problem with the protocol is the lack of encryption. The concept was created back in 2001, when encryption of network communications was not the main
 priority of protocol designers, as the amount of cyber attacks was much lower than in 2022. However, even today the protocol is not using encryption and it
-does not seem that anything is going to change about it soon. 
+does not seem that anything is going to change about it soon.
+
+
+| ![Wireshark capture](../assets/img/personal/bt_capture.png) |
+| Wireshark capture |
+
+| ![Handshake](../assets/img/personal/handshake.png) |
+| Handshake |
+
+Wireshark has a built in BitTorrent protocol support, so the filter can be easily applied to the capture. As you can see in the *Handshake* image, the protocol
+handshake was intercepted. The message was sent in plain text, just as the response with the list of peers:
+
+| ![Peers](../assets/img/personal/bt_peers_capture.png) |
+| Peers |
+
+This is what makes the protocol very unsecure: virtually anybody can sniff on the network and get a list of IP addresses and the ports they are listening to. It
+can be used for disclosing the torrenting computers on a massive scale or exploiting that in some different way. Apart from disclosing the IPs, lack of encryption
+makes it much easier for man in the middle attacks. A hacker could implement the protocol easily and then announce himself as the router in the network and capture
+only the BitTorrent related packets. Then, they would be able to give any kind of response to the users and possibly send their malware instead of the original
+files.
