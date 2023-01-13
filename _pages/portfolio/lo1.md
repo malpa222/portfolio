@@ -57,7 +57,7 @@ I have applied the gained knowledge in the group project assignments that I have
 to research how a pen test can be provided as a service. The company that created the assignment was IT-Workz. They wanted us to conduct a penetration test
 with a fire safety company Hoefnagels. Since the assignment was not big enough to be called a red teaming operation, however the security assessment required
 using the common techniques used by the red teamers. We have planned our work using the Unified Kill Chain and chose the relevant techniques using the Mitre
-ATT&CK framework.
+ATT&CK framework. You can find more details in my [group project description](https://malpa222.github.io/portfolio/group/description).
 
 ### Hoefnagels
 

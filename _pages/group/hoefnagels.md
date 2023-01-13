@@ -1,5 +1,5 @@
 ---
-permalink: /group/phishing
+permalink: /group/hoefnagels
 layout: single
 title: Hoefnagels - phishing campaign
 ---
