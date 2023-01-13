@@ -73,7 +73,7 @@ different types of pentests.
     Together with Georgi Minchev, we have conducted a phishing campaign on Hoefnagels employees. We have aimed to test employees
     awareness rather than ourt ability to breach through the security measures. Then, I have described the requirements for such
     tests in both technical and management level guidelines. You can find my writeup in the
-    [Hoefnagels Social Engineering section](https://malpa222.github.io/portfolio/group/hoefnagels).
+    [Hoefnagels Social Engineering section](https://malpa222.github.io/portfolio/handson/hoefnagels).
 
 - Penetration test types
 
@@ -95,10 +95,10 @@ hindered our progress, making it impossible to conduct more than one pentest. Ho
 progress of the project. Another big challenge was technical - phishing is very hard in modern internet. First, our phishing
 website was flagged by (possibly Google's) web crawlers and flagged, so we had to start from the beginning. Then, setting up
 the DNS forwarding and mail servers was also hard, since we didn't have enough time to make our mailing service authentic.
-More details can be found in the [Hoefnagels phishing writeup](https://malpa222.github.io/portfolio/group/hoefnagels)
+More details can be found in the [Hoefnagels phishing writeup](https://malpa222.github.io/portfolio/handson/hoefnagels)
 
 Looking back at the project, I can say that we could have definitely improved how we split the tasks among each other. While
 I got pretty good tasks, I think that the size of our group was inadequate to the tasks that we created. For example, during
 a pentest, it seemed that there were too many people trying to exploit the Hoefnagels infrastructure, which made the work a
 bit chaotic. Nevertheless, I can take out an important lesson out of it - more people does not always mean that the work will
-be faster. It will definetely help me in my professional career where I will have to work with other people.
+be faster. It will definitely help me in my professional career where I will have to work with other people.

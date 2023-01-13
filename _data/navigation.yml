@@ -7,6 +7,8 @@ docs:
         url: "sprints"
       - title: Personal project
         url: "personal"
+      - title: Group project at IT-Workz
+        url: "group/description"
   - title: Portfolio
     children:
       - title: LO1 - Security specialist
@@ -25,9 +27,3 @@ docs:
         url: "redt/publication"
       - title: Hands-on experience
         url: "redt/handson"
-  - title: Group project
-    children:
-      - title: IT-Workz project description
-        url: "group/description"
-      - title: Hoefnagels social engineering
-        url: "group/hoefnagels"

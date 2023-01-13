@@ -3,7 +3,12 @@ permalink: /portfolio/lo1
 title: LO1 - The security specialist
 ---
 
-## Definition
+The goal of this learning outcome is to show that I know and understand what is red teaming and that I have learned the offensive skills that are sought
+after in the job market and that I can apply them in a professional setting. I will prove that by showing what I learned about red teaming in my trends,
+research, my hands-on experience of the offensive skills that I got in the projects and while solving CTFs and how I have applied the said skills in
+professional settings.
+
+## Red teamer specialization
 
 For the specialization of this course, I have chosen the red teamer track. I wanted to learn about the offensive perspective of cybersecurity as I feel,
 that this is the best place for utilizing my skills from software development courses. Compared to the previous cybersecurity semester, this one gave me
@@ -13,8 +18,8 @@ a clearer overview of what is red teaming, what skills it needs and how it is us
 
 Red team means roughly a group that plays a role of an enemy to provide a security feedback from that side. The term was coined in the military, but now
 is used in the cybersecurity world to denote a designated group of security specialists that are trying to breach security measures put up by the blue team
-(system administrators and defensive security specialists). Major companies, such as Microsoft or FAANG, usually have a highly sophisticated red teaming
-operations set up.
+(system administrators and defensive security specialists). Major companies, such as Microsoft or other FAANG giants, usually have a highly sophisticated
+red teaming operations set up.
 
 Typically, a red teaming operation will involve combining penetration testing techniques to try and detect any vulnerabilities that could grant them entrance
 to the system or disclose sensitive information. These usually follow the Unified Kill Chain methodology for establishing the flow of the attack. Then, red
@@ -46,18 +51,81 @@ benefits for the company:
     with the blue team, both groups can benefit by learning on each other's mistakes thus increasing the security of the system and the most
     sensitive parts.
 
-Security professionals with red teaming knowledge are sought after by big companies. An employee with either software development skills (for creating custom
-tooling), social engineering abilities (for hacking employees) and penetration testing knowledge for vulnerability discovery and exploitation.
+Security professionals with red teaming knowledge are sought after by big companies. An employee with either software development skills (for creating
+custom tooling), social engineering abilities (for hacking employees) and penetration testing knowledge for vulnerability discovery and exploitation.
 
 ## Hands-on learning
 
-### In-depth research
+[comment]: # - Hands-on experience, where you have learned the typical skills, technology, techniques for the job
+
+[comment]: # - Your hands-on learning, or as they say, practice makes perfect.
+[comment]: # What learning activities have you done to be able to do the typical tasks of the specialist?
+[comment]: # Show what new techniques and technology, what theory, and also for example what
+[comment]: # methods, standards, laws, etc. you learned.
+[comment]: # - Give a list of your learning activities with links to your work (in appendices, added files, online).
 
 ### Phishing at Hoefnagels
 
 ### Exploitation techniques
 
+## In-depth research
+
+The most interesting subject in my trends research was the Ransomware as a Service bit. I learned that it is usually done with new languages,
+that are not easily reversible and that have good cross-compiling features. Therefore I decided to investigate the LLVM's compiler infrastructure
+and how it can be used for malware development.
+
+I have defined the following research question and split it into sub-questions that would guide me throughout the research:
+
+**How can LLVM compiler infrastructure be used to aid malware development?**
+
+- Why would a malware developer choose an LLVM based language?
+- Are plugin development results worth the time spent learning the LLVM infrastructure?
+- How effective is the control flow flattening obfuscation?
+
+The first question required using the Library strategy, but the second and the third ones were also based on the Lab and Workshop to actually
+implement the software and see the results. For more details about my research planning see the
+[research section](https://malpa222.github.io/portfolio/redt/in-depth) of my in-depth research.
+
+### Improving malware development with compiler-level obfuscation
+
+I was always interested in binary exploitation and reverse engineering. In my first cybersecurity semester I did a research project on buffer
+overflows and tried to apply them in practice. This time, I wanted to approach the binary exploitation from the defensive side and learn
+how to efficiently obfuscate executables. The LLVM project was the best choice for creating such tooling.
+
+While reading about the LLVM, I stumbled upon a video that showed how to write a plugin for the compiler. I thought that it might be interesting
+to write a plugin that will automatically obfuscate the executable file during the compilation, so that the developer does not need to make their
+code unreadable and unmaintainable. Some more research showed that there were already some attempts at obfuscation with LLVM, however they were
+done long time ago and didn't quite stand the test of time. Based on [a research paper](https://ac.inf.elte.hu/Vol_030_2009/003.pdf) about control
+flow flattening and the [old obfuscation project](https://github.com/obfuscator-llvm/obfuscator), I have decided to implement the algorithm to
+create a guide and a proof of concept on how to write obfuscation plugins.
+
+It was quite a hard task, because first I needed to learn about the LLVM project to be able to write a plugin. Almost every open source developer
+knows that contributing to an open source project first requires quite some time to
+[understand the architecture](https://malpa222.github.io/portfolio/redt/in-depth#why-would-a-malware-developer-choose-a-language-built-on-llvm)
+of the project and how it works. After that, I had to learn basics of C++ (I have only had some experience with C before), LLVM's assembly language
+and basics of reverse engineering. Nevertheless I was able to learn all of the things and successfully develop the obfuscation plugin. More details 
+can be found in [my In-depth research](https://malpa222.github.io/portfolio/redt/in-depth).
+
+### Reflections
+
+The course of my research was fuzzy in the beginning - I have started researching what is cross-platform malware and how could it be used by hackers.
+However, the scope of my research was a bit too broad, which did not show me what is my goal exactly. However, after spending some time learning about
+binary portability, I stumbled upon LLVM and this led me to the final form of my research.
+
+All in all, I believe it was a good project that taught me a lot about how to take a red teaming perspective into account while conducting research
+on a technology or trying to create a new solution.
+
 ## Professional application
+
+[comment]: # - Professional application in a real(istic) setting, to show for being a competent specialist.
+[comment]: # This includes following a structured approach, and combining technical skills with
+[comment]: # professional skills like communication and organisation.
+
+[comment]: # - Professional application. How did you apply your skills and show for being a competent
+[comment]: # specialist in practice? For this you typically describe:
+[comment]: # - a project or assignment where you can be the professional specialist
+[comment]: # - the process and steps followed in your professional application
+[comment]: # - the results that you achieved with links to your work
 
 I have applied the gained knowledge in the group project assignments that I have performed throughout the semester. The main goal of our group project was
 to research how a pen test can be provided as a service. The company that created the assignment was IT-Workz. They wanted us to conduct a penetration test
@@ -90,6 +158,13 @@ value of the activities. You can find more details in my group project descripti
 
 ### Validation
 
+[comment]: # - Validation. Explain how you can account for the quality of your work. Typically:
+[comment]: # - Explain what methods, best-practices or standards you have used
+[comment]: # - What tests have you done to verify quality? (yourself, by stakeholders, users)
+[comment]: # - What reviews have been done, what was the feedback given? (by peers, experts,
+[comment]: # teachers, clients, stakeholders, user groups)
+[comment]: # - What quality criteria did you use? (security principles, hbo-i criteria, ..)
+
 ### Individual project and in-depth research
 
 ### Group project
@@ -104,4 +179,12 @@ was was unaware of our project and received a very positive feedback. Moreover, 
 pentest required a physical intrusion activities. That was also valuable for our team since we got feedback from other students and teachers that
 were not involved in our project.
 
-## Reflections
+## Evaluation
+
+[comment]: # - Evaluation and reflection. In your evaluation try to answer questions such as:
+[comment]: # - What were the highlights for you in your learning to become a specialist?
+[comment]: # - What challenges did you face, what did you do to overcome them?
+[comment]: # - Critical evaluation: What was less successful, what could or should you have done
+[comment]: # differently?
+[comment]: # - Looking ahead: How is this valuable for your professional future? How are you now a
+[comment]: # better security specialist? What’s left to learn?

@@ -1,5 +1,4 @@
 ---
-permalink: /group/hoefnagels
 layout: single
 title: Hoefnagels - phishing campaign
 ---
@@ -120,15 +119,15 @@ This fake email impersonating LinkedIn emails was sent to the email addresses of
 The phishing campaign has had its ups and downs. Not only did we not manage to send mass emails to all employes, nobody was gullible enough to input their credentials
 into our fake landing page. This can be broken down into two conclusions:
 
-**Conducting a succesful phishing campaign is a hard task.**
+**Conducting a successful phishing campaign is a hard task.**
 
 It requires good knowledge of managing IT infrastructure, such as firewalls, ssl certificates, DNS and email servers. Moreover fake domains can be easily targeted by the web
 crawlers and flagged as malicious. And on top of that, the goal of these extensive preparations is to trick somebody into inputting their credentials on a fake webstie.
 
-**Hoefnagels employees are phishing conscious**
+**Hoefnagels employees are phishing conscious.**
 
 Throughout the pen test, we kept in contact with the company. Even before we started our campaign, we heard that the employees reported that they started receiving
-suspicious emails. The security assesment was kept secret, so the employees didn't fall for an actual attack. Our methods were a bit less successful and a bit more subtle,
+suspicious emails. The security assessment was kept secret, so the employees didn't fall for an actual attack. Our methods were a bit less successful and a bit more subtle,
 but they still didn't fall for that.
 
 All in all, I believe that if our group had more time to prepare for the phishing campaign (month or two), we would have been able to create a trusted email server,

@@ -76,7 +76,7 @@ In the document I have explained how to conduct a white, black or grey box test 
 I have also showed what are the benefits of choosing each of the categories and what can be achieved by focusing on, for example, wireless testing
 or social engineering. Then, I have explained the value of social engineering tests and how to execute such attacks based on my experience from
 the Hoefnagels. I have provided the required tooling and tips and tricks mentioned in my
-[Hoefnagels phishing writeup](https://malpa222.github.io/portfolio/group/hoefnagels). I have also provided references to useful resources that I
+[Hoefnagels phishing writeup](https://malpa222.github.io/portfolio/handson/hoefnagels). I have also provided references to useful resources that I
 have used to learn more about the testing.
 
 For the management level document, I have taken a more abstract approach and focused on explaining the business value of each category and area of
