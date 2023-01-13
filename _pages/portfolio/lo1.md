@@ -64,9 +64,27 @@ custom tooling), social engineering abilities (for hacking employees) and penetr
 [comment]: # methods, standards, laws, etc. you learned.
 [comment]: # - Give a list of your learning activities with links to your work (in appendices, added files, online).
 
+A good red teamer needs to know how to work their way around a system so that they can bypass security measures and reach their goal. This type
+of knowledge requires hands-on practice, since computer software is constantly changing and only reading about it in the books will never be
+the same as trying out the theory in real life. Throughout the semester I have engaged in multiple activities that taught me new hacking methods
+and technologies.
+
 ### Phishing at Hoefnagels
 
-### Exploitation techniques
+IT-Workz, the company at which we did our project tasked us with doing a penetration test at an external company. We got contact to Hoefnagels, a
+fire safety company that wanted a security assessment. After establishing the scope and splitting up the tasks, I chose to work on conducting a
+phishing attack.
+
+This was a very challenging but fun task. I worked together with my teammate, Georgi Minchev. Together we discovered that modern internet is a very
+secure place and it makes phishing almost impossible on the spot, and requires some pre-existing infrastructure that can be deemed as trustworthy
+in the network. In essence, I learned how to: create phishing emails, create fake landing pages, use Beef-XSS for cross site scripting attacks,
+use SocialPhish/GoPhish for managing phishing campaigns and how to set up DNS servers so that they can forward the mail to correct adresses.
+
+I believe this is a valuable knowledge, that is hard to obtain without breaking ethical and legal rules. Having the opportunity to do it in
+Hoefnagels was a great chance to learn more about social engineering and phishing. You can find more details
+[in my writeup](https://malpa222.github.io/portfolio/handson/hoefnagels) on the phishing activities.
+
+### Hacking boxes
 
 ## In-depth research
 
@@ -109,8 +127,10 @@ can be found in [my In-depth research](https://malpa222.github.io/portfolio/redt
 ### Reflections
 
 The course of my research was fuzzy in the beginning - I have started researching what is cross-platform malware and how could it be used by hackers.
-However, the scope of my research was a bit too broad, which did not show me what is my goal exactly. However, after spending some time learning about
-binary portability, I stumbled upon LLVM and this led me to the final form of my research.
+Over the course of this semester, I have shown my research to my peers and my teachers during a sessions of red teaming presentations or on
+individual talks with the teachers. Their feedback was valuable and told me to narrow down the scope of my research so that my goal will become
+clearer. Therefore, after spending some more time learning about the binary portability I stumbled upon LLVM, which led me to establishing the final
+form of my research.
 
 All in all, I believe it was a good project that taught me a lot about how to take a red teaming perspective into account while conducting research
 on a technology or trying to create a new solution.
