@@ -12,6 +12,26 @@ Together with the project owner, we have decided that best way to tackle this as
 which would give us a better overview on how a pen test is conducted and what are the requirements. Apart from that, we decided to research the current
 framework and methodologies used in the field.
 
+### Research questions
+
+In order to structure our research, we have decided to use the DOT Research framework. Therefore, we have created a _Research Plan_ which contained the
+following questions (and the research methods we will use to answer them):
+
+**How can IT-Workz ensure that a pentest can be provided as a service?**
+
+- What measures and mitigation should a school take and how can IT-Workz support this?
+- What services related to red teaming and pentestingdo other Cyber security companies offer?
+- What service can IT-Workz offer in the field of Cyber-awareness testing?
+- What are the minimum skills needed to perform a Pentest?
+- Which tooling should be used during a Pentest?
+- What knowledge is required for pentesting depending on whether it’s a black box, grey box or white box?
+- On average, how many hours do the different pen tests take and what is the lead time?
+- Should a pentest report be automatically generated and if so, what would be the best way to do this?
+- What should at least be delivered in a thorough report after a pen test?
+
+We have confirmed the validity of the questions with our teachers and IT-Workz to get the feedback that allowed us to start working on answering them. You
+can find more details in the _Research document_, which contains answers to these questions.
+
 ## Hoefnagels
 
 We started the research by establishing a plan of action. The first item on our agenda was to contact Hoefnagels - a fire safety company based in the
@@ -32,13 +52,14 @@ team managed to get the IP address of the company itself, which was a great find
 
 We have split the tasks among us and delegated each other to different areas. Together with Georgi Minchev, I chose to work on the social engineering
 part - which meant that we had to conduct a phishing campaign. A write-up on my progress is available in the
-*[phishing](https://malpa222.github.io/portfolio/group/description)* section of my portfolio.
+_[phishing](https://malpa222.github.io/portfolio/group/description)_ section of my portfolio.
 
 ## Pentesting as a service
 
 The main goal of the project however, was to establish what is required to provide penetration testing as a service. Since IT-Workz has never had any
 penetration testing experience before, they wanted our group to give them a comprehensive guide on what is penetration testing and what skills and
 resources are needed for providing it for other companies. Moreover, IT-Workz wanted to know if the reporting process could be somehow automated, so
+our group had to prepeare a set of guidelines and procedures used in pen testing, reporting and risk analysis.
 
 In this phase of the project my task was to explain different categories of penetration testing and about social engineering to the technical
 employees and to the management staff. I have decided to describe different areas of pentesting together with their goals in a way that suits each
@@ -54,8 +75,9 @@ intrusions.
 In the document I have explained how to conduct a white, black or grey box test and what are the required skills and tools for these assessments.
 I have also showed what are the benefits of choosing each of the categories and what can be achieved by focusing on, for example, wireless testing
 or social engineering. Then, I have explained the value of social engineering tests and how to execute such attacks based on my experience from
-the Hoefnagels. I have provided the required tooling and tips and tricks mentioned in my [Hoefnagels phishing writeup](). I have also provided
-references to useful resources that I have used to learn more about the testing.
+the Hoefnagels. I have provided the required tooling and tips and tricks mentioned in my
+[Hoefnagels phishing writeup](https://malpa222.github.io/portfolio/group/hoefnagels). I have also provided references to useful resources that I
+have used to learn more about the testing.
 
 For the management level document, I have taken a more abstract approach and focused on explaining the business value of each category and area of
 pentest. Again, I have explained the benefits of choosing each category and briefly mentioned which types of pentests might be interesting for the

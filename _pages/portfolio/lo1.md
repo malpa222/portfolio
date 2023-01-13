@@ -55,9 +55,10 @@ tooling), social engineering abilities (for hacking employees) and penetration t
 
 I have applied the gained knowledge in the group project assignments that I have performed throughout the semester. The main goal of our group project was
 to research how a pen test can be provided as a service. The company that created the assignment was IT-Workz. They wanted us to conduct a penetration test
-with a fire safety company Hoefnagels. Since the assignment was not big enough to be called a red teaming operation, however the security assessment required
-using the common techniques used by the red teamers. We have planned our work using the Unified Kill Chain and chose the relevant techniques using the Mitre
-ATT&CK framework. You can find more details in my [group project description](https://malpa222.github.io/portfolio/group/description).
+with a fire safety company Hoefnagels. The assignment was not big enough to be called a red teaming operation, however the security assessment required
+using the common techniques used by the red teamers. We have planned our work using the DOT Research Framework, which allowed us to plan how are we going
+to approach the requirements presented by the stakeholders. You can find more details about our research in in my
+[group project research description](https://malpa222.github.io/portfolio/group/description#research-questions).
 
 ### Hoefnagels
 
@@ -70,6 +71,16 @@ search engine security measures as well as setting up a dns and a mail server to
 more information about it in my [Hoefnagels pen test write-up](https://malpa222.github.io/portfolio/group/phishing).
 
 ### Pentesting as a Service
+
+However, the main goal of our project was to tell IT-Workz how a pentest could be provided as a service. Since they only knew computer security from the
+defensive side, our group had to prepare them a set of guidelines, procedures, best practices and resources on both technical and high, business level. My
+role in preparing the deliverables was explaining about different categories of pen tests and social engineering in both technical and management documents.
+
+For the technical staff, I focused on explaining how to conduct white, black or gray box pentests, why they would choose one over another and what is the
+output of such test. Moreover, I have also provided a list of resources and necessary tools. I did the same for social engineering. For the management level,
+I tried explaining what is the business value of each type of pentest and social engineering, so that the management staff can understand what is the business
+value of the activities. You can find more details in my group project description -
+[pentesting as a service](http://localhost:4000/group/description#pentesting-as-a-service).
 
 ### Validation
 
