@@ -51,6 +51,12 @@ tooling), social engineering abilities (for hacking employees) and penetration t
 
 ## Hands-on learning
 
+### In-depth research
+
+### Phishing at Hoefnagels
+
+### Exploit techniques
+
 ## Professional application
 
 I have applied the gained knowledge in the group project assignments that I have performed throughout the semester. The main goal of our group project was
@@ -83,6 +89,10 @@ value of the activities. You can find more details in my group project descripti
 [pentesting as a service](http://localhost:4000/group/description#pentesting-as-a-service).
 
 ### Validation
+
+### Individual project and in-depth research
+
+### Group project
 
 After initial contact with the stakeholders, we have translated their business requirements into a series of research questions and guidelines that
 established the directions for our projects. As mentioned before, throughout the projects I have relied on the industry standards: Unified Kill Chain

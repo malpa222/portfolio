@@ -20,7 +20,7 @@ following questions (and the research methods we will use to answer them):
 **How can IT-Workz ensure that a pentest can be provided as a service?**
 
 - What measures and mitigation should a school take and how can IT-Workz support this?
-- What services related to red teaming and pentestingdo other Cyber security companies offer?
+- What services related to red teaming and pentesting do other Cyber security companies offer?
 - What service can IT-Workz offer in the field of Cyber-awareness testing?
 - What are the minimum skills needed to perform a Pentest?
 - Which tooling should be used during a Pentest?
