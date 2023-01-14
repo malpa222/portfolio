@@ -3,15 +3,6 @@ permalink: /portfolio/lo3
 title: LO3 - The security professional
 ---
 
-[comment]: # LO3: the security professional
-[comment]: # “The student shows to have practised and improved professional skills as a security specialist, and
-[comment]: # as a researcher and developer.”
-[comment]: # You are in your semester 6 or 7, so you must be able to learn and show professional skills on the
-[comment]: # graduation level of our education, so on bachelor level. In general, that means that you can deliver
-[comment]: # quality independently in an unpredictable and open setting. The professional skills you want to
-[comment]: # show for are research skills, communication skills, personal leadership, and that you can manage
-[comment]: # all aspects of carrying out an ICT project, in our case with some security context to it.
-
 The goal of this learning outcome is to prove that I have worked on and improved my security specialist as well as
 research and development skills. Moreover I have to show that I have applied aforementioned qualities in a professional
 setting and were able to independently work on delivering good and valuable products.
@@ -65,16 +56,37 @@ from the experts in the domain (teachers).
 
 ### Group project
 
-### Conclusions
+IT-Workz tasked us with conducting a study on how a penetration test can be provided as a service. They wanted us to
+do some field work by performing a pentest at an external company and using the results as an input in our research.
+Therefore, we have translated the stakeholders requirements into research questions and split them among our group.
+
+The research question that I have chosen was: **What knowledge is required for different types of penetration testing?**.
+To answer that, I needed to explain what is black, white and grey box testing. To do that, I needed to use the Library
+research strategy, with the focus on the Literature Study. Penetration test at Hoefnagels was a very valuable input
+to the research which lived in the the Field research strategy. Defining the scope with the company and determining
+our responsibilities gave me insights on why would a company choose one of the approaches and what actual knowledge
+is required.
+
+We have validated our results using the Workshop research strategy by having meeting with our stakeholder and
+showing them the progress of our research.
 
 ## Collaboration and communication
 
-[comment]: # From the roles you had in your projects:
-[comment]: # - How did you collaborate in a team? what was your role(s) in a team?
-[comment]: # - How did you communicate to stakeholders, experts, and others involved? Explain your
-[comment]: # attitude and activities towards externals in meetings, sprint evaluations, organizing
-[comment]: # activities and meetings, doing interviews, keeping contact.
-[comment]: # - What events, workshops, etc. did you go to? What did you see, who did you meet?
+In my team I had two roles: a researcher and a Scrum master. Therefore I had two different goals: first, I was
+responsible for the progress and quality of the results of my research. At the same time I was overseeing the
+task and issue management in our team.
+
+As the researcher, I was working with my group mates to reach our common goals, by means of helping each other
+with the parts of the research that we struggled with, or by working together on the social engineering in the
+Hoefnagels penetration test. Throughout the project, I have kept communication with other group members and
+teachers about the research. Communication with clients happened after every sprint when we had a Teams meeting
+to share our results and receive their feedback. While conducting the penetration test for Hoefnagels, we had
+a couple of on-site meetings so that we could reach conclusions about the scope quicker and prepare for the
+physical intrusion.
+
+Moreover, I have attended the Hack of the Week events to listen to guest lectures or presentations prepared by
+my peers. I believe that this was very important for me as for security professional, as I learned how security
+related services are provided by different companies and I have analyzed their attitude towards clients.
 
 ### Writing skills
 
