@@ -381,9 +381,9 @@ blocks of the executable so that it is harder to reverse engineer the resulting 
 The algorithm can be broken down into the following steps:
 
 1. Create a `dispatcher` variable
-2. Create a `while` loop with condition `dispatcher < num_blocks`
+2. Create an infinite `while` loop
 3. Add a `switch...case` on `dispatcher` and put each basic block into a case
-4. Increment the `dispatcher` after every iteration
+4. Change the `dispatcher` after every iteration
 
 ### Control flow
 

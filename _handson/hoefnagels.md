@@ -26,7 +26,8 @@ to extract credentials of the victims and to be able to plant a malicious file o
 ## Website
 
 Based on our needs, I have decided to use a phishing framework that would aid me with hosting and managing the website. My choice fell on the
-tool called [SocialFish](https://github.com/UndeadSec/SocialFish). SocialFish provided an easy way to host custom html websites and attaching some malicious JavaScript, as well as easy to use interface.
+tool called [SocialFish](https://github.com/UndeadSec/SocialFish). SocialFish provided an easy way to host custom html websites and attaching
+some malicious JavaScript, as well as easy to use interface.
 
 Moreover, we decided to use Beef-XSS - a framework which gives the attacker the possibility to control victim's browser, after delivering a
 JavaScript payload.

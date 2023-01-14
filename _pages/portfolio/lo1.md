@@ -200,10 +200,31 @@ that were not involved in our project.
 
 ## Evaluation
 
-[comment]: # - Evaluation and reflection. In your evaluation try to answer questions such as:
-[comment]: # - What were the highlights for you in your learning to become a specialist?
-[comment]: # - What challenges did you face, what did you do to overcome them?
-[comment]: # - Critical evaluation: What was less successful, what could or should you have done
-[comment]: # differently?
-[comment]: # - Looking ahead: How is this valuable for your professional future? How are you now a
-[comment]: # better security specialist? What’s left to learn?
+This semester required a lot of effort from me. I had to spend a lot of time on my individual research topics which were quite challenging, but
+nevertheless rewarding. I have worked with my group on a penetration test and providing valuable product for the project owners.
+
+I think that I am most content with my effort to create an LLVM based obfuscator. This was quite technical and complex assignment, since it
+required working with assembly language and compilers. However I managed, and created a piece of new/improved technology that can be used
+in red-teaming operations. Personally I feel, that it might be the biggest achievement that I done during my course of the university and
+this semester allowed me to do it.
+
+In the group project I have also did something that was completely new to me, but nevertheless very rewarding - social engineering. It is
+not common for university students to conduct phishing attacks as a part of a penetration test. I learned how to set up a phishing framework,
+create appropriate infrastructure and got to try my social engineering skills.
+
+However some things could have been different. One of the biggest challenges was communication with our project owner. They have not been
+exactly communicative and that have impaired our progress in the research. Nevertheless, because of the proactive attitude, I was able to
+push and deliver the penetration testing study to IT-Workz despite not being able to be in touch all of the time. As for the personal
+reflections: I think that I could have improved to things - scope and time management. My in-depth research and personal project suffered
+from the same problem. I have defined a scope which was a bit too broad, and then had to narrow down the scope as the semester passed, because
+I did not spend enough time on formulating my research. This has impacted my time management, because I needed to work on my projects with
+less time than other students. Nevertheless, it was not that big of an issue and I have managed to work out everything in time and deliver
+quality results.
+
+I believe that this semester taught me a lot about being a security professional. Throughout the course of the study I made heavy use of
+research strategies and security standards and principles. This is a skill that was a bit lacking before, so now I have much better
+understanding how to work in a structured manner. I learned a lot about red teaming and related techniques. Especially the ones that are
+work well with my software development skills. I think that developing good tools is as important as learning exploitation techniques
+and I think I managed to prove it. However, that does not mean that my learning is over. I want to become even better at binary exploitation,
+reverse engineering and improve my exploitation techniques. Apart from that I want to improve my organizational skills even more,
+so that I can understand my clients and that I can show them my progress in a way they could understand.
