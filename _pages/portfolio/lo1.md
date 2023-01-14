@@ -137,19 +137,9 @@ on a technology or trying to create a new solution.
 
 ## Professional application
 
-[comment]: # - Professional application in a real(istic) setting, to show for being a competent specialist.
-[comment]: # This includes following a structured approach, and combining technical skills with
-[comment]: # professional skills like communication and organisation.
-
-[comment]: # - Professional application. How did you apply your skills and show for being a competent
-[comment]: # specialist in practice? For this you typically describe:
-[comment]: # - a project or assignment where you can be the professional specialist
-[comment]: # - the process and steps followed in your professional application
-[comment]: # - the results that you achieved with links to your work
-
 I have applied the gained knowledge in the group project assignments that I have performed throughout the semester. The main goal of our group project was
 to research how a pen test can be provided as a service. The company that created the assignment was IT-Workz. They wanted us to conduct a penetration test
-with a fire safety company Hoefnagels. The assignment was not big enough to be called a red teaming operation, however the security assessment required
+with a fire safety company Hoefnagels. The assignment was not big enough to be called a red teaming operation, however the penetration test required
 using the common techniques used by the red teamers. We have planned our work using the DOT Research Framework, which allowed us to plan how are we going
 to approach the requirements presented by the stakeholders. You can find more details about our research in in my
 [group project research description](https://malpa222.github.io/portfolio/group/description#research-questions).
@@ -176,16 +166,25 @@ I tried explaining what is the business value of each type of pentest and social
 value of the activities. You can find more details in my group project description -
 [pentesting as a service](http://localhost:4000/group/description#pentesting-as-a-service).
 
-### Validation
+## Validation
 
-[comment]: # - Validation. Explain how you can account for the quality of your work. Typically:
-[comment]: # - Explain what methods, best-practices or standards you have used
-[comment]: # - What tests have you done to verify quality? (yourself, by stakeholders, users)
-[comment]: # - What reviews have been done, what was the feedback given? (by peers, experts,
-[comment]: # teachers, clients, stakeholders, user groups)
-[comment]: # - What quality criteria did you use? (security principles, hbo-i criteria, ..)
+When conducting research, it is important to be sure to validate the progress and results constantly. Good feedback can and will improve the quality of the
+study and can resolve any misunderstandings that might arise between the stakeholders of a project.
 
-### Individual project and in-depth research
+### Individual track
+
+As mentioned before, the course of my project was uncertain in the beginning since I have chosen a very broad topic. However, because I have made
+proactive efforts to show my results to my teachers, they were able to direct me on the right track. For the peer feedback, I have presented the
+progress in my in-depth research to my peers and teachers from the red teaming track. Their opinions were very valuable and gave me hints that
+improved my presentation skills. Moreover, by writing a short summary of my research through the means of publication, I was able to get very specific
+peer feedback. Then, at the end of the research, I have created a working proof-of-concept that allowed me to confirm the validity of my research.
+
+For the personal project, I have stayed in contact with my coach and my group mates to receive their feedback. Again, because I was interested in the
+security of decentralized networks, it took me a bit longer to create a good scope for the research. After presenting my updated project to my group
+mates, I received feedback from them that allowed me to get on with my project.
+
+All in all, I have mainly validated my individual projects with peer and teacher feedback. Their opinions and impressions were mainly related to the
+DOT Research Strategies and how I structured my projects to use them and the ways in which I presented my results.
 
 ### Group project
 
@@ -196,8 +195,8 @@ and ATT&CK. Moreover, in the deliveries for the clients we have conducted risk a
 On every stage of the projects the results of our worked were validated with our teachers and project owners, so we could get immediate feedback and
 apply it to the next phases of the research. When we have presented the results of our penetration test to the Hoefnagels management team, which
 was was unaware of our project and received a very positive feedback. Moreover, we have presented our project to our peers, because the Hoefnagels
-pentest required a physical intrusion activities. That was also valuable for our team since we got feedback from other students and teachers that
-were not involved in our project.
+penetration test required a physical intrusion activities. That was also valuable for our team since we got feedback from other students and teachers
+that were not involved in our project.
 
 ## Evaluation
 
