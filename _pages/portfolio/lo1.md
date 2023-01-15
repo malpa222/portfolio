@@ -56,14 +56,6 @@ custom tooling), social engineering abilities (for hacking employees) and penetr
 
 ## Hands-on learning
 
-[comment]: # - Hands-on experience, where you have learned the typical skills, technology, techniques for the job
-
-[comment]: # - Your hands-on learning, or as they say, practice makes perfect.
-[comment]: # What learning activities have you done to be able to do the typical tasks of the specialist?
-[comment]: # Show what new techniques and technology, what theory, and also for example what
-[comment]: # methods, standards, laws, etc. you learned.
-[comment]: # - Give a list of your learning activities with links to your work (in appendices, added files, online).
-
 A good red teamer needs to know how to work their way around a system so that they can bypass security measures and reach their goal. This type
 of knowledge requires hands-on practice, since computer software is constantly changing and only reading about it in the books will never be
 the same as trying out the theory in real life. Throughout the semester I have engaged in multiple activities that taught me new hacking methods
@@ -81,8 +73,25 @@ in the network. In essence, I learned how to: create phishing emails, create fak
 use SocialPhish/GoPhish for managing phishing campaigns and how to set up DNS servers so that they can forward the mail to correct adresses.
 
 I believe this is a valuable knowledge, that is hard to obtain without breaking ethical and legal rules. Having the opportunity to do it in
-Hoefnagels was a great chance to learn more about social engineering and phishing. You can find more details
+Hoefnagels was a great chance to learn more about social engineering and phishing. I learned about data exfiltration using cross site scripting,
+and used OSINT to get very detailed information about our targets. You can find more details
 [in my writeup](https://malpa222.github.io/portfolio/handson/hoefnagels) on the phishing activities.
+
+### Defense evasion
+
+Defense evasion is an important part of malware development. Not only it allows attackers to stay hidden in the infected system, but it also
+prevents their software to be registered in anti virus databases. For red teamers this is also useful, as they can use their tools for a longer
+period of time, without the need to ditch and develop new programs. Since my in-depth research was focused on obfuscating LLVM based software,
+I wanted to extend that and see what can be done with obfuscation.
+
+First, I have done a small study on how the products of my in-depth research can work in real life, by trying to obfuscate a C program using my
+plugin for control flow flattening. However, I felt that it was not enough, so I wanted to see if scripting languages can evade antivirus software
+as well. To do that, I tried to obfuscate a PowerShell script that opened a reverse shell. By default, these scripts are blocked by Windows
+Defender so I wanted to try and evade it.
+
+I think that this taught me that evading defenses will always be possible, but it will just be more and more complex over time. Overall, it was
+a good thing to learn and exercise, since now I have some basic knowledge how all of it works. You can find more details in my
+[defense evasion writeup](https://malpa222.github.io/portfolio/handson/evasion/).
 
 ### Hacking boxes
 
@@ -121,7 +130,7 @@ It was quite a hard task, because first I needed to learn about the LLVM project
 knows that contributing to an open source project first requires quite some time to
 [understand the architecture](https://malpa222.github.io/portfolio/redt/in-depth#why-would-a-malware-developer-choose-a-language-built-on-llvm)
 of the project and how it works. After that, I had to learn basics of C++ (I have only had some experience with C before), LLVM's assembly language
-and basics of reverse engineering. Nevertheless I was able to learn all of the things and successfully develop the obfuscation plugin. More details 
+and basics of reverse engineering. Nevertheless I was able to learn all of the things and successfully develop the obfuscation plugin. More details
 can be found in [my In-depth research](https://malpa222.github.io/portfolio/redt/in-depth).
 
 ### Reflections

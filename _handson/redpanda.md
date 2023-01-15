@@ -5,8 +5,8 @@ title: Hack the Box - Red Panda
 
 ## SSTI - Red Panda writeup
 
-As an exercise for the red-teaming specialisation, our teacher encouraged us to start using Hack the Box environment to learn hacking in practice. Because I do not have 
-much CTF and hands-on hacking experience, I have decided to start with an 'easy' machine - Red Panda
+As an exercise for the red-teaming specialisation, our teacher encouraged us to start using Hack the Box environment to learn hacking in practice.
+Because I do not have much CTF and hands-on hacking experience, I have decided to start with an 'easy' machine - Red Panda.
 
 | ![Redpanda main page](../../assets/img/redpanda/redpanda.png) |
 | Redpanda main page |
@@ -18,13 +18,13 @@ was the result:
 | Greg panda |
 
 I tried sending multiple SQLI payloads, but the service seemed immune to database injection attacks. A colleague gave me a tip to try using Server Side Template Injecton.
-Because I have never heard of this technique, I had to spend some time on learning it and adjusting it to the service. Finally, I found the proper characters to enclose 
+Because I have never heard of this technique, I had to spend some time on learning it and adjusting it to the service. Finally, I found the proper characters to enclose
 my payload with - _*{ malicious code }_. I tried getting all environment variables from the host.
 
 | ![Server's environment variables](../../assets/img/redpanda/get_env.png) |
 | Server's environment variables |
 
-I tried testing multiple payloads from *[PayloadsAlltheThings](https://github.com/swisskyrepo/PayloadsAllTheThings/tree/master/Server%20Side%20Template%20Injection#java)*,
+I tried testing multiple payloads from _[PayloadsAlltheThings](https://github.com/swisskyrepo/PayloadsAllTheThings/tree/master/Server%20Side%20Template%20Injection#java)_,
 and it turned out I can only execute commands on the host OS when encoding them into characters from integers. Therefore, I have decided to create a script which will
 allow me to encode commands and send them to the vulnerable endpoint.
 
@@ -58,4 +58,3 @@ The script worked and I managed to gain user access to the system. I was able to
 
 | ![User flag](../../assets/img/redpanda/user.png) |
 | User flag |
-
