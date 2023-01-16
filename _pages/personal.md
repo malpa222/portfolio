@@ -152,3 +152,84 @@ All together, the DHT is a great way to store large amounts of data without the 
 hundreds of thousands users with quite low effort attacks.
 
 ## How to address the lack of encryption in the protocol?
+
+I want to focus on the results of the first research question and investigate why there is no encryption in the protocol and how to address the issue.
+[Encryption of the protocol](https://en.wikipedia.org/wiki/BitTorrent_protocol_encryption) was a topic of many discussions for a long time. According
+to Briam Cohen, the protocol creator, encryption would make the network perform worse. He bases his statement on the fact that ISPs detect the protocol
+and increase the bandwidth of network. Because this is not a low-level protocol, encryption would make identifying the packets much harder.
+
+These days, most ISPs are throttling down the network capacity if they detect BitTorrent file sharing or even try to issue copyright claims on users
+since they know exactly what is in the packets. I wanted to see if it was possible to use the protocol over an encrypted channel using the HTTPS
+approach, which relies on the [Diffie-Hellman key exchange](https://www.youtube.com/watch?v=NmM9HA2MQGI).
+
+### Implementing the key exchange
+
+Diffie-Hellman is based on prime numbers, as majority of cryptographic protocols. The exchange could be broken down into the
+[following steps](https://exercism.org/tracks/go/exercises/diffie-hellman)
+
+1. The program provides two generator number `p` and `g`
+2. Alice picks private number `a` which `1 < a < p`, Bob does the same with `b`.
+3. Alice calculates her public key A with `A = g^a mod p`, Bob does the same for B with his secret
+4. The public keys are exchanged and Alice calculates the secret key S with `S = B^a mod p` and Bob does the same with `A` and `b`
+5. Now, they both have a symmetric key which will be used for encryption
+
+Diffie-Hellman does not provide that much security as other protocols, but it is used for establishing a secure channel that is
+almost unfeasible to break. For the implementation I have deliberatly chosen small numbers for `p = 11` and `g = 3`, as computers
+are known to mess up bigger numbers. Taking care of that would require too much effort for the scope of the project.
+
+This is the code for the `client` or the peer that will initiate the connection:
+
+```go
+// create a
+rand.Seed(time.Now().UnixNano())
+a := rand.Intn(p-1) + 1
+fmt.Printf("created a = %v\n", a)
+
+// calculate and send A
+A := math.Mod(math.Pow(float64(g), float64(a)), float64(p))
+fmt.Printf("sending A = %v...\n", A)
+sendPk(A, conn)
+
+// wait for B
+println("Waiting for B")
+B := getPk(conn)
+fmt.Printf("received B = %d\n", B)
+
+// calculate S
+return math.Mod(math.Pow(float64(B), float64(a)), float64(p))
+```
+
+And this is the code for the `server` or the peer that will serve the client:
+
+```go
+// create b
+rand.Seed(time.Now().UnixNano())
+b := rand.Intn(p-1) + 1
+fmt.Printf("created b = %v\n", b)
+
+// listen for A
+println("Waiting for A")
+A := getPk(conn)
+fmt.Printf("received A = %v\n", A)
+
+// calculate and send B
+B := math.Mod(math.Pow(float64(g), float64(b)), float64(p))
+fmt.Printf("sending B = %v...\n", B)
+sendPk(B, conn)
+
+// calculate S
+return math.Mod(math.Pow(float64(A), float64(b)), float64(p)
+```
+
+When I ran the code I saw that it worked successfully:
+
+| ![Server](../assets/img/personal/dh_server.png) |
+| Server |
+
+| ![Client](../assets/img/personal/dh_client.png) |
+| Client |
+
+### Encrypting communication
+
+So now, that the key exchange is working, it is time to try and encrypt communication between the two parties. To do that,
+I will use the AES cypher. First, I wrote an utility function that will take the secret number, and create an AES key
