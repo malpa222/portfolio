@@ -5,15 +5,15 @@ title: Personal project
 
 ## Project plan
 
-The personal project in this specialization is not strictly tied to our personal track. Therefore, I have decided to explore the peer-to-peer file
-sharing network created by the BitTorrent protocol. I have always found torrents interesting, and I believe it is a good exercise for this semester
-to look at file sharing from a security perspective. Since BitTorrent was initially created in 2001, a lot of things in the world of computer
-security have changed. The protocol's  security has remained fairly the same throughout the years, so I want to explore what and how could be
-changed in the specification.
+The personal project in this specialization is not strictly tied to our personal track. Therefore, I have decided to investigate security issues
+of the BitTorrent peer-to-peer file sharing network. I have always found torrents interesting, and I believe it is a good exercise for this semester
+to look at file sharing from a security perspective. Since BitTorrent was initially created in 2001, a lot of things in the world of computer security
+have changed. The protocol's  security has remained fairly the same throughout the years, so I want to explore what and how could be changed in the
+specification.
 
-I want to use the Go programming language for developing a couple of proof-of-concepts for the project. The language is becoming more and more popular
-in the industry, because of it's small learning curve, automatic garbage collection and speed. Therefore, I will try to use Go in different use cases to
-discover the potential of the language.
+I want to use the Go programming language for experimenting with the protocol. The language is becoming more and more popular in the industry, because
+of it's small learning curve, automatic garbage collection and speed. Therefore, I will try to use Go in different use cases to discover the potential
+of the language.
 
 ### Research questions
 
@@ -37,13 +37,13 @@ strategies from the DOT framework.
 
   This question is focused on learning about the internals of the BitTorrent protocol. The protocol has been developed in 2001, but it lacks some of the features that
   are crucial for modern network infrastructures. I will approach this research question by applying the Library research to learn about the protocol. To get some
-  hands-on experience, I will combine the Lab and the Workshop strategies by implementing the protocol in Golang. That way, it might be easier for me to visualize 
-  security holes.
+  hands-on experience, I will combine the Library and the Workshop strategies by learning about the protocol and experimenting with it. That way, it might be easier
+  for me to visualize security holes.
 
-- **What risk is associated with using a distributed hash tables?**
+- **What risk is associated with using a distributed hash table?**
 
-  This question tries to analyze the de-facto standard of peer discovery: distributed hash tables. The hash tables can be used for trackerless peer discovery, making 
-  the network completely decentralized, but they also introduce some threats for the DHT nodes. I will try to answer this question by analysing the need for DHTs using 
+  This question tries to analyze the de-facto standard of peer discovery: distributed hash tables. The hash tables can be used for trackerless peer discovery, making
+  the network completely decentralized, but they also introduce some threats for the DHT nodes. I will try to answer this question by analysing the need for DHTs using
   the Library research strategy. Then, I will combine the Lab and Workshop strategies to try and come up with proposals to fix the vulnerabilities.
 
 - **How to address the lack of encryption in the protocol?**
@@ -91,7 +91,6 @@ The main problem with the protocol is the lack of encryption. The concept was cr
 priority of protocol designers, as the amount of cyber attacks was much lower than in 2022. However, even today the protocol is not using encryption and it
 does not seem that anything is going to change about it soon.
 
-
 | ![Wireshark capture](../assets/img/personal/bt_capture.png) |
 | Wireshark capture |
 
@@ -109,3 +108,47 @@ can be used for disclosing the torrenting computers on a massive scale or exploi
 makes it much easier for man in the middle attacks. A hacker could implement the protocol easily and then announce himself as the router in the network and capture
 only the BitTorrent related packets. Then, they would be able to give any kind of response to the users and possibly send their malware instead of the original
 files.
+
+## What risk is associated with using a distributed hash table?
+
+As shown on the diagram with the BitTorrent architecture earlier, the network is actually not really decentralized. Peers are communicating with each other
+without middlemen, but peer and file discovery is still bound to trackers and servers running the index of files. Therefore, BitTorrent decided to implement
+a technology called a [Distributed Hash Table](https://en.wikipedia.org/wiki/Distributed_hash_table) (DHT).
+
+So what is DHT? Essentially its a hash table that is stored on many clients in the network. Each node in the DHT has a record of peers of nearby peers
+(not location-wise, but rather close to its DHT address). That, combined with sophisticated routing functions allow users for efficient key:value lookup.
+In BitTorrent's implementation, the data stored are the pieces of files uploaded to the network. The main advantage of DHT, unlike blockchain, is that
+each node only has information about its predecessor, so every time a node is inserted or removed from the DHT, it does not affect the structure of the
+whole network. To simplify the concept, DHTs could be though of as double linked-lists, which is illustrated by the following diagram:
+
+| ![DHT lookup](../assets/img/personal/dht.png) |
+| [DHT lookup](https://steffikj19.medium.com/dht-demystified-77dd31727ea7) |
+
+### Spying and searching
+
+However, this design has a security flaw which is often used to discover peers sharing copyright claimed data. The talk
+[Crawling DHTs for fun and profit](https://www.youtube.com/watch?v=v4Q_F4XmNEc) at DEFCON18 references a research papre
+[Spying the World from Your Laptop](https://www.researchgate.net/publication/45910450_Spying_the_World_from_your_Laptop_--_Identifying_and_Profiling_Content_Providers_and_Big_Downloaders_in_BitTorrent).
+In essence, the researcher talks about how he has developed a DHT searching engine through the means of crawling. One implementation of the DHT provided
+torrent file description which could be retrieved in plain text. With that knowledge, he was able to query the whole DHT (thousands of nodes) to look for
+certain files. The results he got were lists of peers that had pieces to the files that he was looking for.
+
+This mechanic of the system is often abused for copyright claims since it allows virtually anyone to get a list of peers that have the parts of the file.
+Apart from copyright claims, this can be used by blackhats that want to conduct, let's say, a DDOS attack if a vulnerability in a BitTorrent client is
+found or just harvest some data from the users.
+
+### Sybil attacks
+
+Another attack that could be launched on the DHT is a [Sybil](https://en.wikipedia.org/wiki/Sybil_attack) attack. Named after a case study of a woman
+named Sybil, which had dissociative personality disorder, it works by creating multiple identities on a single machine so that attackers can gain 51%
+of presence in the network. If somebody controls the majority of a peer to peer network stopping them might be virtually impossible. The consequences
+can be severe, since the attacker could distribute malicious files pretending to send legitimate data.
+
+One way to prevent Sybil attacks is to make creating new identities hard for the attacker. Joining the network could require providing an email address,
+a telephone number or creating a new account in some system. However, the [BitTorrent specificatoin](http://www.bittorrent.org/beps/bep_0003.html) does
+not specify any kind of personhood checks.
+
+All together, the DHT is a great way to store large amounts of data without the need of centralization, however it has security holes that could affect
+hundreds of thousands users with quite low effort attacks.
+
+## How to address the lack of encryption in the protocol?
