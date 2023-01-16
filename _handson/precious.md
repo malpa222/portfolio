@@ -63,4 +63,4 @@ the advantage that it is going to be executed as root and change bash permission
 because I missed the `-p` switch in executing bash after exploitation.
 
 | ![Exploit](../../assets/img/precious/exploit.png) |
-| Explloit |
+| Exploit |

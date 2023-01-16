@@ -122,7 +122,7 @@ this:
 | ![Successful execution](../../assets/img/evasion/works_win.png) |
 | Successful execution |
 
-| ![Reverse shell](../../assets/img/evasion/blocked.png) |
+| ![Reverse shell](../../assets/img/evasion/shell.png) |
 | Reverse shell |
 
 As you can see, the AST node obfuscation is the most succesfull technique that allows to avoid Windows Defender when executing

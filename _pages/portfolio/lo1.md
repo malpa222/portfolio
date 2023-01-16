@@ -95,6 +95,27 @@ a good thing to learn and exercise, since now I have some basic knowledge how al
 
 ### Hacking boxes
 
+For my hands on exploitation experience, I have been working on capture the flag challenges. I used Hack the Box service, and here are mentions
+of the machines that I have managed to exploit:
+
+- [Red Panda](https://malpa222.github.io/portfolio/handson/redpanda/)
+
+    This machine required me to learn about SSTI which was previously an unknown technique for me. I had to develop my own script that combined
+    the commands I wanted to execute as a payload. It was very interesting and taught me different ways in which web apps could be exploited.
+
+- [Precious](https://malpa222.github.io/portfolio/handson/precious/)
+
+    In this machine I managed to get root access by learning how to exploit SUID binaries and YAML loading in Ruby. I think that it was an
+    interesting exercise because I had to learn about Linux priviliges in-depth to understand how to exploit the vulnerabilities.
+
+### Stealing credentials with keyloggers
+
+Initially, my in-depth research was focusing on differences between Rust and C in the domain of binary portability. As a product of that
+research, I have been developing a keylogger that would ideally cross-compile. Since the direction of my research changed, I decided to
+finish the keylogger to learn more about credentials stealing on Linux.
+
+You can find more information about it in [my writeup](https://malpa222.github.io/portfolio/handson/keylogger/).
+
 ## In-depth research
 
 The most interesting subject in my trends research was the Ransomware as a Service bit. I learned that it is usually done with new languages,
