@@ -13,7 +13,7 @@ specification.
 
 I want to use the Go programming language for experimenting with the protocol. The language is becoming more and more popular in the industry, because
 of it's small learning curve, automatic garbage collection and speed. Therefore, I will try to use Go in different use cases to discover the potential
-of the language.
+of the language. Learning and understanding Go is another goal of this project.
 
 ### Research questions
 
@@ -232,4 +232,100 @@ When I ran the code I saw that it worked successfully:
 ### Encrypting communication
 
 So now, that the key exchange is working, it is time to try and encrypt communication between the two parties. To do that,
-I will use the AES cypher. First, I wrote an utility function that will take the secret number, and create an AES key
+I will use the AES cypher. First, I wrote an utility function that will take the secret number, and encrypt a piece of
+data with the key received from Diffie-Hellman exchange.
+
+Here is the code for the encryption
+
+```go
+byteInput := []byte(key)
+md5Hash := md5.Sum(byteInput)
+key = hex.EncodeToString(md5Hash[:])
+
+c, err := aes.NewCipher([]byte(key))
+if err != nil {
+  exitErr(err)
+}
+
+gcm, err := cipher.NewGCM(c)
+if err != nil {
+  exitErr(err)
+}
+
+nonce := make([]byte, gcm.NonceSize())
+if _, err = io.ReadFull(rand.Reader, nonce); err != nil {
+  exitErr(err)
+}
+
+return string(gcm.Seal(nonce, nonce, []byte(text), nil))
+```
+
+And this is the decryption code
+
+```go
+byteInput := []byte(key)
+md5Hash := md5.Sum(byteInput)
+key = hex.EncodeToString(md5Hash[:])
+
+c, err := aes.NewCipher([]byte(key))
+if err != nil {
+  exitErr(err)
+}
+
+gcm, err := cipher.NewGCM(c)
+if err != nil {
+  exitErr(err)
+}
+
+nonceSize := gcm.NonceSize()
+if len(ciphertext) < nonceSize {
+  exitErr(err)
+}
+
+nonce, ciphertext := ciphertext[:nonceSize], ciphertext[nonceSize:]
+decrypted, _ := gcm.Open(nil, nonce, ciphertext, nil)
+
+return string(decrypted)
+```
+
+To test the encryption in practice, I have decided to use the [BitTorrent handshake message](https://www.bittorrent.org/beps/bep_0003.html),
+which will look similar to this:
+
+```
+\x13BitTorrent protocol\x00\x00\x00\x00\x00\x00\x00\x00\x86\xd4\xc8\x00\x24\xa4\x69\xbe\x4c\x50\xbc\x5a\x10\x2c\xf7\x17\x80\x31\x00\x74-TR2940-k8hj0wgej6ch
+```
+
+The first byte specifices the length of the `BitTorrent protocol` string, the rest are: 8 null bytes, torrent hash and the peer ID. For the
+purposes of this implementation I am going to just use some dummy data. This code creates the handshake:
+
+```go
+buf := make([]byte, 68)
+buf[0] = 0x13
+
+offset := 1
+offset += copy(buf[offset:], "Bittorrent protocol") // protocol id
+offset += copy(buf[offset:], make([]byte, 48))      // fill up the rest of the buffer
+
+return string(buf)
+```
+
+Having prepared all of the required data, I ran the encryption on the handshake:
+
+| ![Client](../assets/img/personal/hs_client.png) |
+| Client |
+
+I after I encoded it to raw bytes, the actual handshake was base64 encoded so that the program won't stop reading after null
+bytes as you can see on the server.
+
+| ![Server](../assets/img/personal/hs_server.png) |
+| Server |
+
+## Conclusions
+
+What I did in this project is by no me(ans a cryptographically secure solution - it skips over some details, and makes assumptions
+that should be addressed in real life (such as hardcoding generator numbers, using small primes). Nevertheless I think that I have
+made a good investigation of the security of BitTorrent.
+
+Moreover, I was able to learn Go sufficiently enough to implement the elliptic curve key exchange and implement encryption on top
+of an existing protocol. I believe that these skills will also be valuable for my as for red-teamer, since Go is almost as easy
+to write in as python but it is much faster.
