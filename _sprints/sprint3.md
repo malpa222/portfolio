@@ -32,4 +32,3 @@ The portfolio has been updated with:
 * Group project pen test description - [Group project](/group/description)
 * Description of phishing activities done for hoefnagels pen test - [Phishing](/group/phishing)
 * Narrowed down the scope of my in-depth research and made progress on the second research question. - [In-depth](/redt/in-depth)
-
